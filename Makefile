@@ -26,7 +26,7 @@ tester:
 	$(CC) $(CFLAGS) test/tester.cpp $(INC) $(LIB) -o bin/tester
 
 packages:
-	[ -z "`dpkg -l | grep -libsfml-dev`" ] && sudo apt-get install libsfml-dev
-.PHONY: packages
+	sudo apt-get install libsfml-dev
 
+.PHONY: packages
 .PHONY: clean
