@@ -1,8 +1,11 @@
+#include <iostream>
 #include "render.h"
 #include "constants.h"
 
 static sf::RectangleShape floor;
 static sf::RectangleShape ceiling;
+static sf::Text titleText;
+static sf::Font font;
 
 void Render::init(sf::RenderWindow& window) {
     // context settings for window
@@ -24,6 +27,23 @@ void Render::init(sf::RenderWindow& window) {
     ceiling.setSize(sf::Vector2f(Constants::WIDTH, Constants::HEIGHT/2));
     ceiling.setFillColor(sf::Color(100, 100, 100));
     ceiling.setPosition(0, 0);
+
+    // create title font/text
+    if (!font.loadFromFile("res/TitleFont.ttf")) {
+        std::cout << "Could not load title font." << std::endl;
+    }
+    titleText.setFont(font);
+    titleText.setString("The Abyss");
+    titleText.setCharacterSize(50);
+    titleText.setColor(sf::Color::White);
+    sf::FloatRect textRect = titleText.getLocalBounds();
+    titleText.setOrigin(textRect.left + textRect.width/2.0f,
+                        textRect.top  + textRect.height/2.0f);
+    titleText.setPosition(sf::Vector2f(Constants::WIDTH/2.0f, Constants::HEIGHT/2.0f));
+}
+
+void Render::drawTitleScreen(sf::RenderWindow& window) {
+    window.draw(titleText);
 }
 
 void Render::drawBackground(sf::RenderWindow& window) {
