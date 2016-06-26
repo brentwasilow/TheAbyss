@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include "render.h"
 
+static int state = 0;
+
 int main(int argc, char* argv[]) {
     // create and initialize window
     sf::RenderWindow window;
@@ -19,8 +21,15 @@ int main(int argc, char* argv[]) {
         // clear the window with black color
         window.clear(sf::Color::Black);
 
-        // draw everything here...
-        Render::drawBackground(window);
+        // determine game state
+        switch(state) {
+            case 0:
+                Render::drawTitleScreen(window);
+                break;
+            case 1:
+                Render::drawBackground(window);
+                break;
+        }
 
         // end the current frame
         window.display();
