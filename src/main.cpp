@@ -23,17 +23,19 @@ int main(int argc, char* argv[]) {
 
         // determine game state
         switch(state) {
-            case 0:
+            case 0: // Intro
+                // render title screen
                 Render::drawTitleScreen(window);
+                // if return key change to next game state
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
                     state = 1;
                 }
                 break;
-            case 1:
+            case 1: // Main Game
+                // render background
                 Render::drawBackground(window);
                 break;
         }
-
         // end the current frame
         window.display();
     }
