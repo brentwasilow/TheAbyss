@@ -4,10 +4,8 @@
 #include <SFML/Graphics.hpp>
 
 namespace Render {
-
-void init(sf::RenderWindow&);
-void drawBackground(sf::RenderWindow&);
-
+    void init(sf::RenderWindow&);
+    void drawBackground(sf::RenderWindow&);
 };
 
 #endif
