@@ -25,6 +25,9 @@ int main(int argc, char* argv[]) {
         switch(state) {
             case 0:
                 Render::drawTitleScreen(window);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
+                    state = 1;
+                }
                 break;
             case 1:
                 Render::drawBackground(window);
