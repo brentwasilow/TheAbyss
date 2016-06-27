@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "render.h"
 
 static int state = 0;
@@ -26,8 +27,10 @@ int main(int argc, char* argv[]) {
             case 0: // Intro
                 // render title screen
                 Render::drawTitleScreen(window);
+
                 // if return key change to next game state
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
+                    Render::titleSong.stop();
                     state = 1;
                 }
                 break;
