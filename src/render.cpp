@@ -1,6 +1,6 @@
-#include <iostream>
 #include "render.h"
 #include "constants.h"
+#include <SFML/Audio.hpp>
 
 static sf::RectangleShape floor;
 static sf::RectangleShape ceiling;
@@ -30,7 +30,7 @@ void Render::init(sf::RenderWindow& window) {
 
     // create title font/text
     if (!font.loadFromFile("res/TitleFont.ttf")) {
-        std::cout << "Could not load title font." << std::endl;
+        return;
     }
     titleText.setFont(font);
     titleText.setString("The Abyss");
@@ -40,6 +40,13 @@ void Render::init(sf::RenderWindow& window) {
     titleText.setOrigin(textRect.left + textRect.width/2.0f,
                         textRect.top  + textRect.height/2.0f);
     titleText.setPosition(sf::Vector2f(Constants::WIDTH/2.0f, Constants::HEIGHT/2.0f));
+
+    // create title song
+    if (!Render::titleSong.openFromFile("res/titleSong.wav")) {
+        return;
+    }
+    Render::titleSong.setLoop(true);
+    Render::titleSong.play();
 }
 
 void Render::drawTitleScreen(sf::RenderWindow& window) {
