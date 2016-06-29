@@ -2,13 +2,24 @@
 #define __CONSTANTS_H_INCLUDED__
 
 namespace Constants {
-    static const int WIDTH = 640;
-    static const int HEIGHT = 480;
-    static const char* TITLE = "The Abyss";
-    static const int ANTI_ALIASING_LEVEL = 8;
-    static const double FPS = 60.0;
-    static const double UPS = 60.0;
-    static const double FOV = 60.0;
+    extern const int WIDTH;
+    extern const int WIDTH_2;
+    extern const int HEIGHT;
+    extern const int HEIGHT_2;
+
+    extern const char* TITLE;
+    extern const int ANTI_ALIASING_LEVEL;
+
+    extern const double FPS;
+    extern const double UPS;
+
+    extern const double FOV_D;
+    extern const double FOV_R;
+    extern const double FOV_2_D;
+    extern const double FOV_2_R;
+
+    extern const double ANGLE_BETWEEN_RAYS;
+    extern const int TILE_SIZE;
 };
 
 #endif
