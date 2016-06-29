@@ -1,12 +1,19 @@
 #include <SFML/Graphics.hpp>
 #include "render.h"
+#include "player.h"
 
 static int state = 0;
 
 int main(int argc, char* argv[]) {
     // create and initialize window
     sf::RenderWindow window;
-    Render::init(window);
+    Render::initialize(window);
+
+    // define player for use in rendering and updating
+    Player player;
+    player.angle = 90.0;
+    player.x = 160.0;
+    player.y = 160.0;
 
     // run the program as long as the window is open
     while (window.isOpen()) {
@@ -35,7 +42,7 @@ int main(int argc, char* argv[]) {
             case 1: // Main Game
                 // render background
                 Render::drawBackground(window);
-                Render::drawMap(window);
+                Render::drawMap(window, player);
                 break;
         }
         // end the current frame
