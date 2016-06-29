@@ -2,14 +2,13 @@
 #define __RENDER_H_INCLUDED__
 
 #include <SFML/Graphics.hpp>
+#include "player.h"
 
 namespace Render {
-    double verticalIntersection(double);
-    double horizontalIntersection(double);
-    void init(sf::RenderWindow&);
+    void initialize(sf::RenderWindow&);
     void drawTitleScreen(sf::RenderWindow&);
     void drawBackground(sf::RenderWindow&);
-    void drawMap(sf::RenderWindow&);
+    void drawMap(sf::RenderWindow&, Player&);
 };
 
 #endif
