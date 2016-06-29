@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
             case 1: // Main Game
                 // render background
                 Render::drawBackground(window);
+                Render::drawMap(window);
                 break;
         }
         // end the current frame
