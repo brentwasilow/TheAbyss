@@ -1,8 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include "render.h"
 #include "player.h"
+#include "update.h"
+#include "constants.h"
 
-static int state = 0;
+void update(sf::RenderWindow&, Player&);
+void render(sf::RenderWindow&, Player&);
 
 int main(int argc, char* argv[]) {
     // create and initialize window
@@ -12,41 +15,54 @@ int main(int argc, char* argv[]) {
     // define player for use in rendering and updating
     Player player;
     player.angle = 90.0;
-    player.x = 160.0;
-    player.y = 160.0;
+    player.x = 8*32.0;
+    player.y = 8*32.0;
+    player.speed = 5.0;
+
+    // define clock and ancillaries for game loop
+    sf::Clock clock;
+    sf::Int64 nextGameTick = clock.getElapsedTime().asMilliseconds();
+    int loops;
 
     // run the program as long as the window is open
     while (window.isOpen()) {
-        // check all the window's events
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            // event - close the window
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
-        }
-        // clear the window with black color
-        window.clear(sf::Color::Black);
+        loops = 0;
 
-        // determine game state
-        switch(state) {
-            case 0: // Intro
-                // render title screen
-                Render::drawTitleScreen(window);
+        while (clock.getElapsedTime().asMilliseconds() > nextGameTick && loops < Constants::MAX_FRAMESKIP) {
+            update(window, player);
 
-                // if return key change to next game state
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
-                    state = 1;
-                }
-                break;
-            case 1: // Main Game
-                // render background
-                Render::drawBackground(window);
-                Render::drawMap(window, player);
-                break;
+            nextGameTick += Constants::SKIP_TICKS;
+            loops++;
         }
-        // end the current frame
-        window.display();
+        render(window, player);
     }
     return 0;
+}
+
+void update(sf::RenderWindow& window, Player& player) {
+    Update::checkWindowState(window);
+
+    switch(Update::state) {
+        case 0:
+            Update::checkTitleToGameState();
+            break;
+        case 1:
+            Update::checkMovement(player);
+            break;
+    }
+}
+
+void render(sf::RenderWindow& window, Player& player) {
+    window.clear(sf::Color::Black);
+
+    switch(Update::state) {
+        case 0:
+            Render::drawTitleScreen(window);
+            break;
+        case 1:
+            Render::drawBackground(window);
+            Render::drawMap(window, player);
+            break;
+    }
+    window.display();
 }
