@@ -18,8 +18,13 @@ namespace Constants {
     extern const double FOV_2_D;
     extern const double FOV_2_R;
 
+    extern const int DISTANCE_TO_PROJECTION;
     extern const double ANGLE_BETWEEN_RAYS;
     extern const int TILE_SIZE;
+
+    extern const int TICKS_PER_SECOND;
+    extern const int SKIP_TICKS;
+    extern const int MAX_FRAMESKIP;
 };
 
 #endif
