@@ -5,6 +5,7 @@ struct Player {
     double angle;
     double x;
     double y;
+    double speed;
 };
 
 #endif
