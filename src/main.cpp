@@ -14,10 +14,36 @@ int main(int argc, char* argv[]) {
 
     // define player for use in rendering and updating
     Player player;
+    player.x = 8*32;
+    player.y = 8*32;
     player.angle = 90.0;
-    player.x = 8*32.0;
-    player.y = 8*32.0;
     player.speed = 5.0;
+
+    // load level
+    sf::Image level;
+    if (!level.loadFromFile("res/level1.png")) {
+        return -1;
+    }
+    int map[level.getSize().y][level.getSize().x];
+    for (uint y = 0; y < level.getSize().y; y++) {
+        for (uint x = 0; x < level.getSize().x; x++) {
+            sf::Color color = level.getPixel(x, y);
+
+            if (color == sf::Color::White) {
+                map[y][x] = Constants::EMPTY;
+            } else if (color == sf::Color::Black) {
+                map[y][x] = Constants::BRICK;
+            } else if (color == sf::Color::Blue) {
+                map[y][x] = Constants::FLAG;
+            } else if (color == sf::Color::Red) {
+                player.x = (x * Constants::TILE_SIZE) + Constants::TILE_SIZE/2;
+                player.y = (y * Constants::TILE_SIZE) + Constants::TILE_SIZE/2;
+                map[y][x] = Constants::EMPTY;
+            } else {
+
+            }
+        }
+    }
 
     // define clock and ancillaries for game loop
     sf::Clock clock;
