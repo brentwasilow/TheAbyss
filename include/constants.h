@@ -25,6 +25,11 @@ namespace Constants {
     extern const int TICKS_PER_SECOND;
     extern const int SKIP_TICKS;
     extern const int MAX_FRAMESKIP;
+
+    extern const int EMPTY;
+    extern const int BRICK;
+    extern const int FLAG;
+    extern const int PLAYER;
 };
 
 #endif
