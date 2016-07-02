@@ -18,7 +18,8 @@ int main(int argc, char* argv[]) {
     player.x = 8*32;
     player.y = 8*32;
     player.angle = 90.0;
-    player.speed = 5.0;
+    player.angleSpeed = 3.0;
+    player.movementSpeed = 5.0;
 
     // load map
     Level::loadMap("res/level1.png");
