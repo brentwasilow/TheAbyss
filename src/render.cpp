@@ -124,7 +124,7 @@ double verticalIntersection(double angle, Player& player) {
     if (angle == 90.0 || angle == 270.0) return 100000000.0;
 
     if (angle > 90.0 && angle < 270.0) {
-        verticalX = (int(player.x) / Constants::TILE_SIZE) * Constants::TILE_SIZE - 1;
+        verticalX = (int(player.x) / Constants::TILE_SIZE) * Constants::TILE_SIZE;
         dx = -Constants::TILE_SIZE;
         verticalY = player.y + (player.x - verticalX) * t;
         dy = t * Constants::TILE_SIZE;
@@ -174,7 +174,7 @@ double horizontalIntersection(double angle, Player& player) {
     if (angle == 0.0 || angle == 180.0) return 100000000.0;
 
     if (angle > 0.0 && angle < 180.0) {
-        horizontalY = int(player.y / Constants::TILE_SIZE) * Constants::TILE_SIZE - 1;
+        horizontalY = int(player.y / Constants::TILE_SIZE) * Constants::TILE_SIZE;
         dy = -Constants::TILE_SIZE;
 
         if (angle == 90.0) {
