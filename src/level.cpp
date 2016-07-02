@@ -3,16 +3,14 @@
 #include <stdlib.h>
 #include "constants.h"
 
-std::vector<std::vector<int> > Level::map;
-
-void Level::loadMap(const char* fileName) {
+void Level::initialize(const char* fileName) {
     // load level image
     sf::Image level;
     if (!level.loadFromFile(fileName)) {
         exit(EXIT_FAILURE);
     }
     // create 2D array
-    Level::map.resize(level.getSize().y, std::vector<int>(level.getSize().x, 0));
+    map.resize(level.getSize().y, std::vector<int>(level.getSize().x, 0));
 
     // populate map from image loaded
     for (uint y = 0; y < level.getSize().y; y++) {
