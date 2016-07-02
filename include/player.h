@@ -1,11 +1,14 @@
 #ifndef __PLAYER_H_INCLUDED__
 #define __PLAYER_H_INCLUDED__
 
-struct Player {
-    double angle;
-    double x;
-    double y;
-    double speed;
+class Player {
+    public:
+        double angle;
+        double angleSpeed;
+
+        double x;
+        double y;
+        double movementSpeed;
 };
 
 #endif
