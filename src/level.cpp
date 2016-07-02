@@ -1,6 +1,7 @@
 #include "level.h"
 #include <SFML/Graphics.hpp>
 #include <stdlib.h>
+#include "constants.h"
 
 std::vector<std::vector<int> > Level::loadMap(const char* fileName) {
     // load level image
@@ -24,8 +25,8 @@ std::vector<std::vector<int> > Level::loadMap(const char* fileName) {
             } else if (color == sf::Color::Blue) {
                 map[y][x] = Constants::FLAG;
             } else if (color == sf::Color::Red) {
-                player.x = (x * Constants::TILE_SIZE) + Constants::TILE_SIZE/2;
-                player.y = (y * Constants::TILE_SIZE) + Constants::TILE_SIZE/2;
+                //player.x = (x * Constants::TILE_SIZE) + Constants::TILE_SIZE/2;
+                //player.y = (y * Constants::TILE_SIZE) + Constants::TILE_SIZE/2;
                 map[y][x] = Constants::EMPTY;
             }
         }
