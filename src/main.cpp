@@ -9,21 +9,16 @@ void update(sf::RenderWindow&, Player&);
 void render(sf::RenderWindow&, Player&);
 
 int main(int argc, char* argv[]) {
-    // create and initialize window
+    // create game variables
     sf::RenderWindow window;
     Render::initialize(window);
 
-    // define player for use in rendering and updating
-    Player player;
-    player.x = 8*32;
-    player.y = 8*32;
-    player.angle = 90.0;
-    player.angleSpeed = 3.0;
-    player.movementSpeed = 5.0;
+    // load player
+    Player player (8*32, 8*32, 90);
 
     // load map
-    Level::loadMap("res/level1.png");
-
+    Level level;
+    level.initialize("res/level1.png");
 
     // define clock and ancillaries for game loop
     sf::Clock clock;
