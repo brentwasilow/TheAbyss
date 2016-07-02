@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
     player.speed = 5.0;
 
     // load map
-    std::vector<std::vector<int> > map = Level::loadMap("res/level1.png");
+    Level::loadMap("res/level1.png");
 
 
     // define clock and ancillaries for game loop
