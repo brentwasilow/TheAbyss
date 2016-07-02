@@ -24,6 +24,7 @@ int main(int argc, char* argv[]) {
     if (!level.loadFromFile("res/level1.png")) {
         return -1;
     }
+
     int map[level.getSize().y][level.getSize().x];
     for (uint y = 0; y < level.getSize().y; y++) {
         for (uint x = 0; x < level.getSize().x; x++) {
