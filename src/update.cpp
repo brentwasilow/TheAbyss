@@ -21,8 +21,6 @@ void Update::checkTitleToGameState() {
 }
 
 void Update::checkMovement(Player& player) {
-    int row = 0, column = 0;
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
         player.angle -= 3.0;
 
