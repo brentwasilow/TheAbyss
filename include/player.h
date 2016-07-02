@@ -9,6 +9,8 @@ class Player {
         double x;
         double y;
         double movementSpeed;
+
+        Player(double, double, double);
 };
 
 #endif
