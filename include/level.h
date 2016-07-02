@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace Level {
-    std::vector<vector<int>> loadMap(const char*);
+    std::vector<std::vector<int> > loadMap(const char*);
 };
 
 #endif
