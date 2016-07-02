@@ -22,18 +22,18 @@ void Update::checkTitleToGameState() {
 
 void Update::checkMovement(Player& player) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        player.angle -= 3.0;
+        player.angle -= player.angleSpeed;
 
         if (player.angle < 0.0) player.angle += 360.0;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        player.angle += 3.0;
+        player.angle += player.angleSpeed;
 
         if (player.angle > 359.0) player.angle -= 360.0;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-        player.x += player.speed * cos(player.angle * M_PI / 180.0);
-        player.y += -player.speed * sin(player.angle * M_PI / 180.0);
+        player.x += player.movementSpeed * cos(player.angle * M_PI / 180.0);
+        player.y += -player.movementSpeed * sin(player.angle * M_PI / 180.0);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-        player.x -= player.speed * cos(player.angle * M_PI / 180.0);
-        player.y -= -player.speed * sin(player.angle * M_PI / 180.0);
+        player.x -= player.movementSpeed * cos(player.angle * M_PI / 180.0);
+        player.y -= -player.movementSpeed * sin(player.angle * M_PI / 180.0);
     }
 }
