@@ -6,9 +6,9 @@
 
 class Level {
     public:
-        std::vector<std::vector<int> > map;
+        std::vector< std::vector<int> > map;
 
-        void initialize(const char*);
+        Level(const char*, Player&);
 };
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef __CONSTANTS_H_INCLUDED__
 #define __CONSTANTS_H_INCLUDED__
 
+#include <string>
+
 namespace Constants {
     extern const int WIDTH;
     extern const int WIDTH_2;
@@ -30,6 +32,8 @@ namespace Constants {
     extern const int BRICK;
     extern const int FLAG;
     extern const int PLAYER;
+
+    extern const std::string DELIM;
 };
 
 #endif

@@ -1,9 +1,10 @@
 #include "level.h"
+
 #include <SFML/Graphics.hpp>
 #include <stdlib.h>
 #include "constants.h"
 
-void Level::initialize(const char* fileName) {
+Level::Level(const char* fileName, Player& player) {
     // load level image
     sf::Image level;
     if (!level.loadFromFile(fileName)) {
@@ -24,8 +25,8 @@ void Level::initialize(const char* fileName) {
             } else if (color == sf::Color::Blue) {
                 map[y][x] = Constants::FLAG;
             } else if (color == sf::Color::Red) {
-                //player.x = (x * Constants::TILE_SIZE) + Constants::TILE_SIZE/2;
-                //player.y = (y * Constants::TILE_SIZE) + Constants::TILE_SIZE/2;
+                player.x = (x * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
+                player.y = (y * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
                 map[y][x] = Constants::EMPTY;
             }
         }

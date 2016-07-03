@@ -3,12 +3,13 @@
 
 #include <SFML/Graphics.hpp>
 #include "player.h"
+#include "level.h"
 
 namespace Render {
     void initialize(sf::RenderWindow&);
     void drawTitleScreen(sf::RenderWindow&);
     void drawBackground(sf::RenderWindow&);
-    void drawMap(sf::RenderWindow&, Player&);
+    void drawMap(sf::RenderWindow&, Player&, Level&);
 };
 
 #endif

@@ -10,7 +10,7 @@ class Player {
         double y;
         double movementSpeed;
 
-        Player(double, double, double);
+        Player(const char*);
 };
 
 #endif
