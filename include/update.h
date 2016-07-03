@@ -3,13 +3,14 @@
 
 #include <SFML/Graphics.hpp>
 #include "player.h"
+#include "level.h"
 
 namespace Update {
     extern int state;
 
     void checkWindowState(sf::RenderWindow&);
     void checkTitleToGameState();
-    void checkMovement(Player&);
+    void checkMovement(Player&, Level&);
 }
 
 #endif
