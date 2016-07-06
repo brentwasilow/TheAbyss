@@ -6,6 +6,11 @@
 #include "constants.h"
 
 Player::Player(const char* fileName) {
+    // assign starting values to variables
+    this->health = 100.0;
+    this->xp = 0.0;
+    this->attack = 1.0;
+
     std::string line;
 
     // open player configuration file
@@ -19,11 +24,7 @@ Player::Player(const char* fileName) {
             std::string token = line.substr(line.find(Constants::DELIM)+Constants::DELIM.length(), line.length());
             double value = atof(token.c_str());
 
-            if (key.compare("x") == 0) {
-                this->x = value;
-            } else if (key.compare("y") == 0) {
-                this->y = value;
-            } else if (key.compare("movementSpeed") == 0) {
+            if (key.compare("movementSpeed") == 0) {
                 this->movementSpeed = value;
             } else if (key.compare("angle") == 0) {
                 this->angle = value;

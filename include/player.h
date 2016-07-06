@@ -3,6 +3,10 @@
 
 class Player {
     public:
+        double health;
+        double xp;
+        double attack;
+
         double angle;
         double angleSpeed;
 
