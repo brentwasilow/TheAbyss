@@ -10,6 +10,7 @@ Player::Player(const char* fileName) {
     this->health = 100.0;
     this->xp = 0.0;
     this->attack = 1.0;
+    this->attacking = false;
 
     std::string line;
 

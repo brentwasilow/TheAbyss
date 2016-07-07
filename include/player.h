@@ -14,6 +14,8 @@ class Player {
         double y;
         double movementSpeed;
 
+        bool attacking;
+
         Player(const char*);
 };
 
