@@ -15,14 +15,14 @@ int main(int argc, char* argv[]) {
     sf::RenderWindow window;
     Render::initialize(window);
 
+    // load textures
+    Texture::initialize();
+
     // load player
     Player player("res/level1.plyr");
 
     // load level
     Level level("res/level1.png", player);
-
-    // load textures
-    Texture::initialize();
 
     // define clock and ancillaries for game loop
     sf::Clock clock;
@@ -67,6 +67,7 @@ void render(sf::RenderWindow& window, Player& player, Level& level) {
         case 1:
             Render::drawBackground(window);
             Render::drawMap(window, player, level);
+            Render::drawEnemies(window, player, level);
             break;
     }
     window.display();
