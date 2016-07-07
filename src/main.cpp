@@ -53,6 +53,7 @@ void update(sf::RenderWindow& window, Player& player, Level& level) {
             break;
         case 1:
             Update::checkMovement(player, level);
+            Update::checkWeapon(player);
             break;
     }
 }
@@ -68,6 +69,7 @@ void render(sf::RenderWindow& window, Player& player, Level& level) {
             Render::drawBackground(window);
             Render::drawMap(window, player, level);
             Render::drawEnemies(window, player, level);
+            Render::drawWeapon(window, player);
             break;
     }
     window.display();
