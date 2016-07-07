@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include "texture.h"
+#include "update.h"
 
 static sf::RectangleShape backgroundFloor;
 static sf::RectangleShape backgroundCeiling;
@@ -278,5 +279,18 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
             }
         }
 
+    }
+}
+
+void Render::drawWeapon(sf::RenderWindow& window, Player& player) {
+    if (player.attacking) {
+        if (Update::weaponOffset < 8) {
+            Texture::weaponSprite.setTextureRect(sf::IntRect(0, 0, 128, Texture::weaponSprite.getLocalBounds().height));
+        } else {
+            Texture::weaponSprite.setTextureRect(sf::IntRect(128, 0, 128, Texture::weaponSprite.getLocalBounds().height));
+        }
+        Texture::weaponSprite.setScale(2.5, 2.5);
+        Texture::weaponSprite.setPosition(Constants::WIDTH_2-(Texture::weaponSprite.getGlobalBounds().width/2), Constants::HEIGHT-Texture::weaponSprite.getGlobalBounds().height+Update::weaponOffset);
+        window.draw(Texture::weaponSprite);
     }
 }

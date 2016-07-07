@@ -11,6 +11,7 @@ namespace Render {
     void drawBackground(sf::RenderWindow&);
     void drawMap(sf::RenderWindow&, Player&, Level&);
     void drawEnemies(sf::RenderWindow&, Player&, Level&);
+    void drawWeapon(sf::RenderWindow&, Player&);
 };
 
 #endif
