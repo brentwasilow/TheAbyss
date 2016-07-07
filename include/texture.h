@@ -8,6 +8,7 @@ namespace Texture {
     extern sf::Font titleTextFont;
     extern sf::Texture wallTexture;
     extern sf::Sprite wallTextureSprite;
+    extern sf::Texture enemy1;
 
     void initialize();
 };
