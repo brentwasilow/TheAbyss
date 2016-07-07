@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <stdlib.h>
+#include "enemy.h"
+#include "texture.h"
 #include "constants.h"
 
 Level::Level(const char* fileName, Player& player) {
@@ -12,6 +14,9 @@ Level::Level(const char* fileName, Player& player) {
     }
     // create 2D array
     map.resize(level.getSize().y, std::vector<int>(level.getSize().x, 0));
+
+    // assign size of zBuffer
+    zBuffer.resize(Constants::WIDTH);
 
     // populate map from image loaded
     for (uint y = 0; y < level.getSize().y; y++) {
@@ -28,6 +33,13 @@ Level::Level(const char* fileName, Player& player) {
                 player.x = (x * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
                 player.y = (y * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
                 map[y][x] = Constants::EMPTY;
+            } else if (color == sf::Color::Yellow) {
+                Enemy enemy;
+                enemy.x = (x * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
+                enemy.y = (y * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
+
+                enemy.sprite.setTexture(Texture::enemy1);
+                enemies.push_back(enemy);
             }
         }
     }
