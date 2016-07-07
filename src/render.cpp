@@ -73,6 +73,8 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         double correctDistance = distance * cos((angle - player.angle) * M_PI / 180.0);
         double projectedSliceHeight = Constants::DISTANCE_TO_PROJECTION * Constants::TILE_SIZE / correctDistance;
 
+        level.zBuffer[x] = distance;
+
         Texture::wallTextureSprite.setTextureRect(sf::IntRect(subimageOffsetX+textureOffset, subimageOffsetY, 1, 64));
         sf::Vector2f targetSize(1.0f, projectedSliceHeight);
         Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
@@ -197,4 +199,84 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
 void Render::drawBackground(sf::RenderWindow& window) {
     window.draw(backgroundFloor);
     window.draw(backgroundCeiling);
+}
+
+void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level) {
+    // loop through enemy list
+    for (uint i = 0; i < level.enemies.size(); i++) {
+        // player angle in radians
+        double playerAngleRadians = (player.angle * M_PI / 180.0);
+
+        // get change in x and y for player angle
+        double vx = cos(playerAngleRadians);
+        double vy = sin(playerAngleRadians);
+
+        // get change in x/y from enemy to player
+        double dx = level.enemies[i].x - player.x;
+        double dy = player.y - level.enemies[i].y;
+
+        // get straight line distance from enemy to player
+        level.enemies[i].distance = hypot(dx, dy);
+
+        // find angle difference between enemy and player
+        double dPrimeX = dx / level.enemies[i].distance;
+        level.enemies[i].angleWithOrigin = acos(dPrimeX) * 180.0 / M_PI;
+
+        // enemy is in front of player so change angle to III and IV quadrant
+        if (dy < 0) level.enemies[i].angleWithOrigin = 360 - level.enemies[i].angleWithOrigin;
+
+        level.enemies[i].playerViewingAngle = player.angle;
+
+        // get angle difference between enemy and player factoring in position in cartesian quadrants
+        if ((dy < 0 && dx > 0) && (vx > 0 && vy >= 0)) {
+            level.enemies[i].playerViewingAngle = player.angle + 360;
+        } else if ((dy > 0 && dx > 0) && (vx > 0 && vy < 0)) {
+            level.enemies[i].angleWithOrigin += 360;
+        }
+        level.enemies[i].angle = level.enemies[i].playerViewingAngle - level.enemies[i].angleWithOrigin;
+    }
+
+
+    // sort enemy list as a z-buffer
+    for (uint i = 0; i < level.enemies.size()-1; i++) {
+        for (uint j = i+1; j < level.enemies.size(); j++) {
+            if (level.enemies[i].distance < level.enemies[j].distance) {
+                Enemy temp = level.enemies[i];
+                level.enemies[i] = level.enemies[j];
+                level.enemies[j] = temp;
+            }
+        }
+    }
+
+    for (uint i = 0; i < level.enemies.size(); i++) {
+        Enemy enemy = level.enemies[i];
+
+        double heightAndWidth = ((Constants::DISTANCE_TO_PROJECTION*enemy.sprite.getTexture()->getSize().x)/enemy.distance);
+
+        double projectedSliceHeight = heightAndWidth;
+        double projectedSliceWidth = heightAndWidth;
+
+        int startTexture = (int) ((Constants::WIDTH_2) - (projectedSliceWidth/2)+(enemy.angle*Constants::WIDTH/Constants::FOV_D));
+        int endTexture = startTexture + (int) (projectedSliceWidth);
+        double divisor = (double) (endTexture - startTexture) / enemy.sprite.getTexture()->getSize().x;
+
+        double counter = 0;
+        if (startTexture < 0) counter = abs(startTexture);
+
+        for (int i = 0; i < Constants::WIDTH; i++) {
+            if (i >= startTexture && i <= endTexture) {
+                if (enemy.distance < level.zBuffer[i]) {
+                    int sub = (int) (counter / (divisor + 0.01));
+
+                    enemy.sprite.setTextureRect(sf::IntRect(sub, 0, 1, enemy.sprite.getLocalBounds().height));
+                    sf::Vector2f targetSize(1.0f, projectedSliceHeight);
+                    enemy.sprite.setScale(targetSize.x/enemy.sprite.getLocalBounds().width, targetSize.y/enemy.sprite.getLocalBounds().height);
+                    enemy.sprite.setPosition(i, (Constants::HEIGHT_2)-(projectedSliceHeight/2.0));
+                    window.draw(enemy.sprite);
+                }
+                counter++;
+            }
+        }
+
+    }
 }
