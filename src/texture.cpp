@@ -7,6 +7,8 @@ sf::Font Texture::titleTextFont;
 sf::Texture Texture::wallTexture;
 sf::Sprite Texture::wallTextureSprite;
 sf::Texture Texture::enemy1;
+sf::Texture Texture::weapon;
+sf::Sprite Texture::weaponSprite;
 
 void Texture::initialize() {
     // load title text font
@@ -37,4 +39,11 @@ void Texture::initialize() {
     if (!Texture::enemy1.loadFromFile("res/enemy1.png")) {
         exit(EXIT_FAILURE);
     }
+
+    // load attack texture
+    if (!Texture::weapon.loadFromFile("res/attack.png")) {
+        exit(EXIT_FAILURE);
+    }
+    Texture::weaponSprite.setTexture(Texture::weapon);
+
 }
