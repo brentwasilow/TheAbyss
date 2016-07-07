@@ -1,10 +1,12 @@
 #include "update.h"
 #include "constants.h"
 #include <cmath>
+#include "texture.h"
 
 #define _USE_MATH_DEFINES
 
 int Update::state = 0;
+int Update::weaponOffset = 0;
 
 void Update::checkWindowState(sf::RenderWindow& window) {
     sf::Event event;
@@ -52,5 +54,23 @@ void Update::checkMovement(Player& player, Level& level) {
             player.x = tempX;
             player.y = tempY;
         }
+    }
+}
+
+void Update::checkWeapon(Player& player) {
+    // if attack key pressed initialize variables
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+        player.attacking = true;
+        weaponOffset = 0;
+    }
+
+    // while player is attacking lower rendering offset
+    if (player.attacking) {
+        weaponOffset += 2;
+    }
+
+    // if rendering offset is 0 stop animation
+    if (weaponOffset == int(Texture::weapon.getSize().y)) {
+        player.attacking = false;
     }
 }
