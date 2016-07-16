@@ -81,12 +81,12 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         level.zBuffer[x] = distance;
 
         // compute fog
-        double val = distance / fogValue;
-        if (val > 1.0) val = 1.0;
-        val *= 255;
-        int v = 255-val;
-        sf::Color color(v, v, v);
-        Texture::wallTextureSprite.setColor(color);
+        //double val = distance / fogValue;
+        //if (val > 1.0) val = 1.0;
+        //val *= 255;
+        //int v = 255-val;
+        //sf::Color color(v, v, v);
+        //Texture::wallTextureSprite.setColor(color);
 
         Texture::wallTextureSprite.setTextureRect(sf::IntRect(subimageOffsetX+textureOffset, subimageOffsetY, 1, 64));
         sf::Vector2f targetSize(1.0f, projectedSliceHeight);
@@ -94,7 +94,30 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         Texture::wallTextureSprite.setPosition(x, (Constants::HEIGHT_2)-(projectedSliceHeight/2.0));
         window.draw(Texture::wallTextureSprite);
 
+        double v = (angle-player.angle) * M_PI/ 180.0;
+
+        for (int y = (Constants::HEIGHT_2)+1+int(projectedSliceHeight/2); y < Constants::HEIGHT; y++) {
+            double wallDistance = (32*Constants::DISTANCE_TO_PROJECTION)/(y-Constants::HEIGHT_2);
+            double actualDistance = wallDistance / cos((v));
+
+            double changeInX = actualDistance*sin((v));
+            double changeInY = actualDistance*cos((v));
+
+            changeInX += player.x;
+            changeInY += player.y;
+
+            int texX = int(changeInX) % 64;
+            int texY = int(changeInY) % 64;
+
+            Texture::wallTextureSprite.setTextureRect(sf::IntRect((2*65)+texX, (2*65)+texY, 1, 1));
+            sf::Vector2f targetSize2(1.0f, 1.0f);
+            Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
+            Texture::wallTextureSprite.setPosition(x, y);
+            window.draw(Texture::wallTextureSprite);
+        }
+
         angle -= Constants::ANGLE_BETWEEN_RAYS;
+
     }
 }
 
