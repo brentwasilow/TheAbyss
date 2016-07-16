@@ -9,6 +9,8 @@
 static sf::RectangleShape backgroundFloor;
 static sf::RectangleShape backgroundCeiling;
 
+static double fogValue = 16*64;
+
 double verticalIntersection(double, Player&, Level&);
 double horizontalIntersection(double, Player&, Level&);
 
@@ -25,7 +27,7 @@ void Render::initialize(sf::RenderWindow& window) {
     settings.antialiasingLevel = Constants::ANTI_ALIASING_LEVEL;
 
     // create the window
-//    window.create(sf::VideoMode(Constants::WIDTH, Constants::HEIGHT), Constants::TITLE, sf::Style::Default, settings);
+    //window.create(sf::VideoMode(Constants::WIDTH, Constants::HEIGHT), Constants::TITLE, sf::Style::Default, settings);
 
     window.create(sf::VideoMode(Constants::WIDTH, Constants::HEIGHT), "The Abyss");
 
@@ -35,13 +37,11 @@ void Render::initialize(sf::RenderWindow& window) {
 
     // create floor and ceiling background sizes/colors/positions
     backgroundFloor.setSize(sf::Vector2f(Constants::WIDTH, Constants::HEIGHT_2));
-    backgroundFloor.setFillColor(sf::Color(5, 5, 5));
-//50
+    backgroundFloor.setFillColor(sf::Color(0, 0, 0));
     backgroundFloor.setPosition(0, Constants::HEIGHT_2);
 
     backgroundCeiling.setSize(sf::Vector2f(Constants::WIDTH, Constants::HEIGHT_2));
-//100
-    backgroundCeiling.setFillColor(sf::Color(5, 5, 5));
+    backgroundCeiling.setFillColor(sf::Color(0, 0, 0));
     backgroundCeiling.setPosition(0, 0);
 }
 
@@ -81,7 +81,7 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         level.zBuffer[x] = distance;
 
         // compute fog
-        double val = distance / (8*64);
+        double val = distance / fogValue;
         if (val > 1.0) val = 1.0;
         val *= 255;
         int v = 255-val;
@@ -281,9 +281,12 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
                 if (enemy.distance < level.zBuffer[i]) {
                     int sub = (int) (counter / (divisor + 0.01));
 
-        int v = 255-(log(enemy.distance)/log(32*64)*256);
-        sf::Color color(v, v, v);
-        enemy.sprite.setColor(color);
+                    double val = enemy.distance / fogValue;
+                    if (val > 1.0) val = 1.0;
+                    val *= 255;
+                    int v = 255-val;
+                    sf::Color color(v, v, v);
+                    enemy.sprite.setColor(color);
 
                     enemy.sprite.setTextureRect(sf::IntRect(sub, 0, 1, enemy.sprite.getLocalBounds().height));
                     sf::Vector2f targetSize(1.0f, projectedSliceHeight);
