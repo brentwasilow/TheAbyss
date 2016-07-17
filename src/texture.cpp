@@ -5,6 +5,7 @@
 sf::Text Texture::titleText;
 sf::Font Texture::titleTextFont;
 sf::Texture Texture::wallTexture;
+sf::Image Texture::wallTextureImage;
 sf::Sprite Texture::wallTextureSprite;
 sf::Texture Texture::enemy1;
 sf::Texture Texture::weapon;
@@ -34,6 +35,10 @@ void Texture::initialize() {
     }
     // store the wall texture in a sprite
     Texture::wallTextureSprite.setTexture(Texture::wallTexture);
+
+    if (!Texture::wallTextureImage.loadFromFile("res/wallTexture.png")) {
+        exit(EXIT_FAILURE);
+    }
 
     // load enemy1 texture
     if (!Texture::enemy1.loadFromFile("res/enemy1.png")) {

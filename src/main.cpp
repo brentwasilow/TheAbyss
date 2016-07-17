@@ -67,10 +67,10 @@ void render(sf::RenderWindow& window, Player& player, Level& level) {
             Render::drawTitleScreen(window);
             break;
         case 1:
-            Render::drawBackground(window);
+//            Render::drawBackground(window);
             Render::drawMap(window, player, level);
-            Render::drawEnemies(window, player, level);
-            Render::drawWeapon(window, player);
+//            Render::drawEnemies(window, player, level);
+//            Render::drawWeapon(window, player);
             break;
     }
     window.display();

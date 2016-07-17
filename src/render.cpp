@@ -2,6 +2,8 @@
 #include "constants.h"
 #include <cmath>
 #include <iostream>
+#include <stdio.h>
+#include <cstring>
 #include <stdlib.h>
 #include "texture.h"
 #include "update.h"
@@ -22,8 +24,8 @@ static int subimageOffsetHorizontalY;
 static const double fogValue = (16*Constants::TILE_SIZE);
 static const sf::Vector2f scale(1.0f, 1.0f);
 static const float numerator = 32.0f * Constants::DISTANCE_TO_PROJECTION;
-static const int floorTexOffsetX = 2*65;
-static const int floorTexOffsetY = 2*65;
+static const int floorTexOffsetX = 1*65;
+static const int floorTexOffsetY = 0*65;
 
 void Render::initialize(sf::RenderWindow& window) {
     // context settings
@@ -34,6 +36,8 @@ void Render::initialize(sf::RenderWindow& window) {
     //window.create(sf::VideoMode(Constants::WIDTH, Constants::HEIGHT), Constants::TITLE, sf::Style::Default, settings);
 
     window.create(sf::VideoMode(Constants::WIDTH, Constants::HEIGHT), "The Abyss");
+
+    window.setVerticalSyncEnabled(false);
 
     // set window properties
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
@@ -56,6 +60,12 @@ void Render::drawTitleScreen(sf::RenderWindow& window) {
 void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
     double angle = player.angle + Constants::FOV_2_D;
 
+    sf::Uint8 pixels[Constants::WIDTH*Constants::HEIGHT*4];
+    std::memset(pixels, 0, sizeof(pixels));
+    sf::Texture tex;
+    tex.create(Constants::WIDTH, Constants::HEIGHT);
+    sf::Sprite sprite(tex);
+
     for (int x = 0; x < Constants::WIDTH; x++) {
         if (angle < 0.0) angle += 360.0;
         else if (angle >= 360.0) angle -= 360.0;
@@ -64,6 +74,7 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         double horizontalDistance = horizontalIntersection(angle, player, level);
 
         double distance;
+
         int textureOffset;
         int subimageOffsetX;
         int subimageOffsetY;
@@ -84,15 +95,14 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
 
         level.zBuffer[x] = distance;
 
-/*
-        // compute fog
-        double val = distance / fogValue;
-        if (val > 1.0) val = 1.0;
-        val *= 255;
-        int v = 255-val;
-        sf::Color color(v, v, v);
-        Texture::wallTextureSprite.setColor(color);
-*/
+        // depth shading
+        double wallDepth = distance / fogValue;
+        if (wallDepth > 1.0) wallDepth = 1.0;
+        wallDepth *= 255;
+        int wallCol = 255-wallDepth;
+        sf::Color wallDepthShade(wallCol, wallCol, wallCol);
+        Texture::wallTextureSprite.setColor(wallDepthShade);
+
         Texture::wallTextureSprite.setTextureRect(sf::IntRect(subimageOffsetX+textureOffset, subimageOffsetY, 1, 64));
         sf::Vector2f targetSize(1.0f, projectedSliceHeight);
         Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
@@ -107,6 +117,8 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         float yComponent = -sin(angle*M_PI/180);
         int denom = int(projectedSliceHeight/2);
 
+        int ceilingOffset = Constants::HEIGHT_2-int(projectedSliceHeight/2.0f)-1;
+
         for (int y = Constants::HEIGHT_2+int(projectedSliceHeight/2); y < Constants::HEIGHT; y++) {
             float wallDistance = numerator / denom;
             float correctWallDistance = wallDistance * correction;
@@ -117,29 +129,44 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
 
             int texX = int(changeInX) & 63;
             int texY = int(changeInY) & 63;
-/*
-            val = correctWallDistance / fogValue;
-            if (val > 1.0) val = 1.0;
-            val *= 255;
-            int v = 255-val;
-            sf::Color color(v, v, v);
-            Texture::wallTextureSprite.setColor(color);
-*/
 
-            Texture::wallTextureSprite.setTextureRect(sf::IntRect((floorTexOffsetX)+texX, (floorTexOffsetY)+texY, 1, 1));
-            Texture::wallTextureSprite.setPosition(x, y);
-            window.draw(Texture::wallTextureSprite);
+            // depth shading
+            double floorDepth = correctWallDistance / fogValue;
+            if (floorDepth > 1.0) floorDepth = 1.0;
+            floorDepth *= 255;
+            int floorCol = 255-floorDepth;
+            sf::Color floorDepthShade(floorCol, floorCol, floorCol);
 
+            sf::Color color = Texture::wallTextureImage.getPixel(floorTexOffsetX+texX, floorTexOffsetY+texY);
+            color *= floorDepthShade;
 
-            //Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, -targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
+            int floorIndex = (y * Constants::WIDTH + x) * 4;
+            int ceilingIndex = ((ceilingOffset-counter) * Constants::WIDTH + x) * 4;
+
+            pixels[floorIndex] = color.r;
+            pixels[floorIndex + 1] = color.g;
+            pixels[floorIndex + 2] = color.b;
+            pixels[floorIndex + 3] = color.a;
+
+            pixels[ceilingIndex] = color.r;
+            pixels[ceilingIndex + 1] = color.g;
+            pixels[ceilingIndex + 2] = color.b;
+            pixels[ceilingIndex + 3] = color.a;
+
+            //Texture::wallTextureSprite.setTextureRect(sf::IntRect((floorTexOffsetX)+texX, (floorTexOffsetY)+texY, 1, 1));
+            //Texture::wallTextureSprite.setPosition(x, y);
+            //window.draw(Texture::wallTextureSprite);
+
+            //Texture::wallTextureSprite.setScale(1.0f, -1.0f);
             //Texture::wallTextureSprite.setPosition(x, Constants::HEIGHT_2-1-int(projectedSliceHeight/2.0f)-counter);
             //window.draw(Texture::wallTextureSprite);
 
             counter++;
         }
         angle -= Constants::ANGLE_BETWEEN_RAYS;
-
     }
+    tex.update(pixels);
+    window.draw(sprite);
 }
 
 double verticalIntersection(double angle, Player& player, Level& level) {
