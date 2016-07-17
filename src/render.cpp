@@ -60,11 +60,11 @@ void Render::drawTitleScreen(sf::RenderWindow& window) {
 void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
     double angle = player.angle + Constants::FOV_2_D;
 
-    sf::Uint8 pixels[Constants::WIDTH*Constants::HEIGHT*4];
+    sf::Uint8 pixels[Constants::WIDTH * Constants::HEIGHT * 4];
+    sf::Texture floorAndCeilingTexture;
+    floorAndCeilingTexture.create(Constants::WIDTH, Constants::HEIGHT);
+    sf::Sprite floorAndCeilingSprite(floorAndCeilingTexture);
     std::memset(pixels, 0, sizeof(pixels));
-    sf::Texture tex;
-    tex.create(Constants::WIDTH, Constants::HEIGHT);
-    sf::Sprite sprite(tex);
 
     for (int x = 0; x < Constants::WIDTH; x++) {
         if (angle < 0.0) angle += 360.0;
@@ -165,8 +165,8 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         }
         angle -= Constants::ANGLE_BETWEEN_RAYS;
     }
-    tex.update(pixels);
-    window.draw(sprite);
+    floorAndCeilingTexture.update(pixels);
+    window.draw(floorAndCeilingSprite);
 }
 
 double verticalIntersection(double angle, Player& player, Level& level) {
