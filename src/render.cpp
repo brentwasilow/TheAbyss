@@ -81,12 +81,12 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         level.zBuffer[x] = distance;
 
         // compute fog
-        //double val = distance / fogValue;
-        //if (val > 1.0) val = 1.0;
-        //val *= 255;
-        //int v = 255-val;
-        //sf::Color color(v, v, v);
-        //Texture::wallTextureSprite.setColor(color);
+        double val = distance / fogValue;
+        if (val > 1.0) val = 1.0;
+        val *= 255;
+        int v = 255-val;
+        sf::Color color(v, v, v);
+        Texture::wallTextureSprite.setColor(color);
 
         Texture::wallTextureSprite.setTextureRect(sf::IntRect(subimageOffsetX+textureOffset, subimageOffsetY, 1, 64));
         sf::Vector2f targetSize(1.0f, projectedSliceHeight);
@@ -97,10 +97,6 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         int counter = 0;
         for (int y = (Constants::HEIGHT_2)+1+int(projectedSliceHeight/2.0f); y < Constants::HEIGHT; y++) {
             double wallDistance = double(32.0*Constants::WIDTH_2/tan(Constants::FOV_2_R))/double(y-Constants::HEIGHT_2);
-
-            double scale1 = 32.0 / wallDistance;
-            double scale2 = double(y-Constants::HEIGHT_2) / Constants::DISTANCE_TO_PROJECTION;
-            double scale = scale2/scale1;
 
             wallDistance = wallDistance / cos((player.angle-angle)*M_PI/180.0);
 
@@ -127,7 +123,15 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             int texX = int(changeInX) % 64;
             int texY = int(changeInY) % 64;
 
-            Texture::wallTextureSprite.setTextureRect(sf::IntRect((6*65)+texX, (2*65)+texY, 1, 1));
+        double val = wallDistance / fogValue;
+        if (val > 1.0) val = 1.0;
+        val *= 255;
+        int v = 255-val;
+        sf::Color color(v, v, v);
+        Texture::wallTextureSprite.setColor(color);
+
+
+            Texture::wallTextureSprite.setTextureRect(sf::IntRect((0*65)+texX, (0*65)+texY, 1, 1));
             sf::Vector2f targetSize2(1.0f, 1.0f);
             Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
             Texture::wallTextureSprite.setPosition(x, y);
