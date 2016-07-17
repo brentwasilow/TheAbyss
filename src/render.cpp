@@ -9,8 +9,6 @@
 static sf::RectangleShape backgroundFloor;
 static sf::RectangleShape backgroundCeiling;
 
-static double fogValue = 16*64;
-
 double verticalIntersection(double, Player&, Level&);
 double horizontalIntersection(double, Player&, Level&);
 
@@ -20,6 +18,12 @@ static int subimageOffsetVerticalX;
 static int subimageOffsetVerticalY;
 static int subimageOffsetHorizontalX;
 static int subimageOffsetHorizontalY;
+
+static const double fogValue = (16*Constants::TILE_SIZE);
+static const sf::Vector2f scale(1.0f, 1.0f);
+static const float numerator = 32.0f * Constants::DISTANCE_TO_PROJECTION;
+static const int floorTexOffsetX = 2*65;
+static const int floorTexOffsetY = 2*65;
 
 void Render::initialize(sf::RenderWindow& window) {
     // context settings
@@ -52,7 +56,7 @@ void Render::drawTitleScreen(sf::RenderWindow& window) {
 void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
     double angle = player.angle + Constants::FOV_2_D;
 
-    for (int x = 0; x <= Constants::WIDTH; x++) {
+    for (int x = 0; x < Constants::WIDTH; x++) {
         if (angle < 0.0) angle += 360.0;
         else if (angle >= 360.0) angle -= 360.0;
 
@@ -75,11 +79,12 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             subimageOffsetX = subimageOffsetVerticalX;
             subimageOffsetY = subimageOffsetVerticalY;
         }
-        double correctDistance = distance * cos((angle - player.angle) * M_PI / 180.0);
-        double projectedSliceHeight = Constants::DISTANCE_TO_PROJECTION * Constants::TILE_SIZE / correctDistance;
+        double correctDistance = distance*cos((angle-player.angle)*M_PI/180.0);
+        double projectedSliceHeight = Constants::DISTANCE_TO_PROJECTION*Constants::TILE_SIZE/correctDistance;
 
         level.zBuffer[x] = distance;
 
+/*
         // compute fog
         double val = distance / fogValue;
         if (val > 1.0) val = 1.0;
@@ -87,7 +92,7 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         int v = 255-val;
         sf::Color color(v, v, v);
         Texture::wallTextureSprite.setColor(color);
-
+*/
         Texture::wallTextureSprite.setTextureRect(sf::IntRect(subimageOffsetX+textureOffset, subimageOffsetY, 1, 64));
         sf::Vector2f targetSize(1.0f, projectedSliceHeight);
         Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
@@ -95,54 +100,43 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         window.draw(Texture::wallTextureSprite);
 
         int counter = 0;
-        for (int y = (Constants::HEIGHT_2)+1+int(projectedSliceHeight/2.0f); y < Constants::HEIGHT; y++) {
-            double wallDistance = double(32.0*Constants::WIDTH_2/tan(Constants::FOV_2_R))/double(y-Constants::HEIGHT_2);
+        Texture::wallTextureSprite.setScale(scale.x, scale.y);
 
-            wallDistance = wallDistance / cos((player.angle-angle)*M_PI/180.0);
+        float correction = 1/cos((player.angle-angle)*M_PI/180);
+        float xComponent = cos(angle*M_PI/180);
+        float yComponent = -sin(angle*M_PI/180);
+        int denom = int(projectedSliceHeight/2);
 
-            double changeInX = cos(angle*M_PI/180.0)*wallDistance;
-            double changeInY = -sin(angle*M_PI/180.0)*wallDistance;
+        for (int y = Constants::HEIGHT_2+int(projectedSliceHeight/2); y < Constants::HEIGHT; y++) {
+            float wallDistance = numerator / denom;
+            float correctWallDistance = wallDistance * correction;
+            denom++;
+
+            float changeInX = (xComponent * correctWallDistance) + player.x;
+            float changeInY = (yComponent * correctWallDistance) + player.y;
+
+            int texX = int(changeInX) & 63;
+            int texY = int(changeInY) & 63;
 /*
-            if (angle >= 0.0 && angle < 90.0) {
-                changeInX = cos(angle*M_PI/180.0) * wallDistance;
-                changeInY = -sin(angle*M_PI/180.0) * wallDistance;
-            } else if (angle >= 90.0 && angle < 180.0) {
-                changeInX = cos((angle)*M_PI/180.0)*wallDistance;
-                changeInY = -sin((angle)*M_PI/180.0)*wallDistance;
-            } else if (angle >= 180.0 && angle < 270.0) {
-                changeInX = cos(angle*M_PI/180.0)*wallDistance;
-                changeInY = -sin(angle*M_PI/180.0)*wallDistance;
-            } else if (angle >= 270.0 && angle < 360.0) {
-                changeInX = cos((angle-360.0)*M_PI/180.0)*wallDistance;
-                changeInY = -sin((angle-360.0)*M_PI/180.0)*wallDistance;
-            }
+            val = correctWallDistance / fogValue;
+            if (val > 1.0) val = 1.0;
+            val *= 255;
+            int v = 255-val;
+            sf::Color color(v, v, v);
+            Texture::wallTextureSprite.setColor(color);
 */
-            changeInX += player.x;
-            changeInY += player.y;
 
-            int texX = int(changeInX) % 64;
-            int texY = int(changeInY) % 64;
-
-        double val = wallDistance / fogValue;
-        if (val > 1.0) val = 1.0;
-        val *= 255;
-        int v = 255-val;
-        sf::Color color(v, v, v);
-        Texture::wallTextureSprite.setColor(color);
-
-
-            Texture::wallTextureSprite.setTextureRect(sf::IntRect((0*65)+texX, (0*65)+texY, 1, 1));
-            sf::Vector2f targetSize2(1.0f, 1.0f);
-            Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
+            Texture::wallTextureSprite.setTextureRect(sf::IntRect((floorTexOffsetX)+texX, (floorTexOffsetY)+texY, 1, 1));
             Texture::wallTextureSprite.setPosition(x, y);
             window.draw(Texture::wallTextureSprite);
 
-            Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, -targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
-            Texture::wallTextureSprite.setPosition(x, Constants::HEIGHT_2-1-int(projectedSliceHeight/2.0f)-counter);
-            window.draw(Texture::wallTextureSprite);
+
+            //Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, -targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
+            //Texture::wallTextureSprite.setPosition(x, Constants::HEIGHT_2-1-int(projectedSliceHeight/2.0f)-counter);
+            //window.draw(Texture::wallTextureSprite);
+
             counter++;
         }
-
         angle -= Constants::ANGLE_BETWEEN_RAYS;
 
     }

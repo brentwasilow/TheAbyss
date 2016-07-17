@@ -6,6 +6,7 @@
 #include "level.h"
 #include "texture.h"
 #include <iostream>
+#include <ctime>
 
 void update(sf::RenderWindow&, Player&, Level&);
 void render(sf::RenderWindow&, Player&, Level&);
