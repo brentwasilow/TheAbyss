@@ -94,26 +94,49 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         Texture::wallTextureSprite.setPosition(x, (Constants::HEIGHT_2)-(projectedSliceHeight/2.0));
         window.draw(Texture::wallTextureSprite);
 
-        double v = (angle-player.angle) * M_PI/ 180.0;
+        int counter = 0;
+        for (int y = (Constants::HEIGHT_2)+1+int(projectedSliceHeight/2.0f); y < Constants::HEIGHT; y++) {
+            double wallDistance = double(32.0*Constants::WIDTH_2/tan(Constants::FOV_2_R))/double(y-Constants::HEIGHT_2);
 
-        for (int y = (Constants::HEIGHT_2)+1+int(projectedSliceHeight/2); y < Constants::HEIGHT; y++) {
-            double wallDistance = (32*Constants::DISTANCE_TO_PROJECTION)/(y-Constants::HEIGHT_2);
-            double actualDistance = wallDistance / cos((v));
+            double scale1 = 32.0 / wallDistance;
+            double scale2 = double(y-Constants::HEIGHT_2) / Constants::DISTANCE_TO_PROJECTION;
+            double scale = scale2/scale1;
 
-            double changeInX = actualDistance*sin((v));
-            double changeInY = actualDistance*cos((v));
+            wallDistance = wallDistance / cos((player.angle-angle)*M_PI/180.0);
 
+            double changeInX = cos(angle*M_PI/180.0)*wallDistance;
+            double changeInY = -sin(angle*M_PI/180.0)*wallDistance;
+/*
+            if (angle >= 0.0 && angle < 90.0) {
+                changeInX = cos(angle*M_PI/180.0) * wallDistance;
+                changeInY = -sin(angle*M_PI/180.0) * wallDistance;
+            } else if (angle >= 90.0 && angle < 180.0) {
+                changeInX = cos((angle)*M_PI/180.0)*wallDistance;
+                changeInY = -sin((angle)*M_PI/180.0)*wallDistance;
+            } else if (angle >= 180.0 && angle < 270.0) {
+                changeInX = cos(angle*M_PI/180.0)*wallDistance;
+                changeInY = -sin(angle*M_PI/180.0)*wallDistance;
+            } else if (angle >= 270.0 && angle < 360.0) {
+                changeInX = cos((angle-360.0)*M_PI/180.0)*wallDistance;
+                changeInY = -sin((angle-360.0)*M_PI/180.0)*wallDistance;
+            }
+*/
             changeInX += player.x;
             changeInY += player.y;
 
             int texX = int(changeInX) % 64;
             int texY = int(changeInY) % 64;
 
-            Texture::wallTextureSprite.setTextureRect(sf::IntRect((2*65)+texX, (2*65)+texY, 1, 1));
+            Texture::wallTextureSprite.setTextureRect(sf::IntRect((6*65)+texX, (2*65)+texY, 1, 1));
             sf::Vector2f targetSize2(1.0f, 1.0f);
             Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
             Texture::wallTextureSprite.setPosition(x, y);
             window.draw(Texture::wallTextureSprite);
+
+            Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, -targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
+            Texture::wallTextureSprite.setPosition(x, Constants::HEIGHT_2-1-int(projectedSliceHeight/2.0f)-counter);
+            window.draw(Texture::wallTextureSprite);
+            counter++;
         }
 
         angle -= Constants::ANGLE_BETWEEN_RAYS;
