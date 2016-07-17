@@ -101,16 +101,38 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         wallDepth *= 255;
         int wallCol = 255-wallDepth;
         sf::Color wallDepthShade(wallCol, wallCol, wallCol);
-        Texture::wallTextureSprite.setColor(wallDepthShade);
 
-        Texture::wallTextureSprite.setTextureRect(sf::IntRect(subimageOffsetX+textureOffset, subimageOffsetY, 1, 64));
-        sf::Vector2f targetSize(1.0f, projectedSliceHeight);
-        Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
-        Texture::wallTextureSprite.setPosition(x, (Constants::HEIGHT_2)-(projectedSliceHeight/2.0));
-        window.draw(Texture::wallTextureSprite);
+        double wallScale = projectedSliceHeight / Constants::TILE_SIZE;
+
+        int wallCounter = 0;
+
+//        Texture::wallTextureSprite.setColor(wallDepthShade);
+
+        for (int y = (Constants::HEIGHT_2-int(projectedSliceHeight/2)); y < (Constants::HEIGHT_2+int(projectedSliceHeight/2)); y++) {
+            if (y < 0 || y >= Constants::HEIGHT) {
+                wallCounter++;
+                continue;
+            }
+            int index = (y * Constants::WIDTH + x) * 4;
+            sf::Color wallColor = Texture::wallTextureImage.getPixel(subimageOffsetX+textureOffset, subimageOffsetY+int(wallCounter/wallScale));
+            wallColor *= wallDepthShade;
+
+            pixels[index] = wallColor.r;
+            pixels[index+1] = wallColor.g;
+            pixels[index+2] = wallColor.b;
+            pixels[index+3] = wallColor.a;
+
+            wallCounter++;
+        }
+
+//        Texture::wallTextureSprite.setTextureRect(sf::IntRect(subimageOffsetX+textureOffset, subimageOffsetY, 1, 64));
+//        sf::Vector2f targetSize(1.0f, projectedSliceHeight);
+//        Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
+//        Texture::wallTextureSprite.setPosition(x, (Constants::HEIGHT_2)-(projectedSliceHeight/2.0));
+//        window.draw(Texture::wallTextureSprite);
 
         int counter = 0;
-        Texture::wallTextureSprite.setScale(scale.x, scale.y);
+//        Texture::wallTextureSprite.setScale(scale.x, scale.y);
 
         float correction = 1/cos((player.angle-angle)*M_PI/180);
         float xComponent = cos(angle*M_PI/180);

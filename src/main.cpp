@@ -40,7 +40,10 @@ int main(int argc, char* argv[]) {
             nextGameTick += Constants::SKIP_TICKS;
             loops++;
         }
+//std::clock_t start;
+//start = std::clock();
         render(window, player, level);
+//std::cout << "Time: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
     }
     return 0;
 }
