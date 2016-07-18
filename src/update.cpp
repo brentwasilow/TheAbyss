@@ -5,7 +5,7 @@
 
 #define _USE_MATH_DEFINES
 
-int Update::state = 0;
+int Update::state = 1;
 int Update::weaponOffset = 0;
 
 void Update::checkWindowState(sf::RenderWindow& window) {

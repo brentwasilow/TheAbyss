@@ -23,6 +23,7 @@ namespace Constants {
     extern const int DISTANCE_TO_PROJECTION;
     extern const double ANGLE_BETWEEN_RAYS;
     extern const int TILE_SIZE;
+    extern const int DISTANCE_TO_PROJECTION_TILE_SIZE;
 
     extern const int TICKS_PER_SECOND;
     extern const int SKIP_TICKS;
@@ -34,6 +35,8 @@ namespace Constants {
     extern const int PLAYER;
 
     extern const std::string DELIM;
+
+    extern const int PIXEL_BUFFER_SIZE;
 };
 
 #endif

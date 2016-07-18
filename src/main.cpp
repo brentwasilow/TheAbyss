@@ -12,17 +12,11 @@ void update(sf::RenderWindow&, Player&, Level&);
 void render(sf::RenderWindow&, Player&, Level&);
 
 int main(int argc, char* argv[]) {
-    // create window
+    // create and initialize game variables
     sf::RenderWindow window;
-    Render::initialize(window);
-
-    // load textures
+    Render::setup(window);
     Texture::initialize();
-
-    // load player
     Player player("res/level1.plyr");
-
-    // load level
     Level level("res/level1.png", player);
 
     // define clock and ancillaries for game loop
@@ -40,11 +34,9 @@ int main(int argc, char* argv[]) {
             nextGameTick += Constants::SKIP_TICKS;
             loops++;
         }
-//std::clock_t start;
-//start = std::clock();
         render(window, player, level);
-//std::cout << "Time: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
     }
+    Render::cleanup();
     return 0;
 }
 

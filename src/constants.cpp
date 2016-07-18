@@ -23,6 +23,7 @@ namespace Constants {
     const int DISTANCE_TO_PROJECTION = (WIDTH_2/tan(FOV_2_R));
     const double ANGLE_BETWEEN_RAYS = (FOV_D/WIDTH);
     const int TILE_SIZE = 64;
+    const int DISTANCE_TO_PROJECTION_TILE_SIZE = DISTANCE_TO_PROJECTION * TILE_SIZE;
 
     const int TICKS_PER_SECOND = 60;
     const int SKIP_TICKS = (1000/TICKS_PER_SECOND);
@@ -34,4 +35,6 @@ namespace Constants {
     const int PLAYER = 3;
 
     const std::string DELIM = ":=";
+
+    const int PIXEL_BUFFER_SIZE = (WIDTH * HEIGHT * 4);
 };

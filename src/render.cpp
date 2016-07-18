@@ -10,6 +10,12 @@
 
 double verticalIntersection(double, Player&, Level&);
 double horizontalIntersection(double, Player&, Level&);
+double bound(double);
+
+// file-only global variables
+static sf::Uint8* pixels = new sf::Uint8[Constants::PIXEL_BUFFER_SIZE];
+static sf::Texture pixelBufferTexture;
+static sf::Sprite pixelBufferSprite;
 
 static int textureOffsetVertical;
 static int textureOffsetHorizontal;
@@ -17,24 +23,53 @@ static int subimageOffsetVerticalX;
 static int subimageOffsetVerticalY;
 static int subimageOffsetHorizontalX;
 static int subimageOffsetHorizontalY;
+static double* cosLookUp = new double[Constants::WIDTH];
+static double* invCosLookUp = new double[Constants::WIDTH];
 
-static const double fogValue = (16*Constants::TILE_SIZE);
-static const sf::Vector2f scale(1.0f, 1.0f);
+// file-only global constant variables
+static const double fogValue = (16 * Constants::TILE_SIZE);
 static const float numerator = 32.0f * Constants::DISTANCE_TO_PROJECTION;
-static const int floorTexOffsetX = 1*65;
-static const int floorTexOffsetY = 0*65;
+static const int floorTexOffsetX = (1 * (Constants::TILE_SIZE + 1));
+static const int floorTexOffsetY = (0 * (Constants::TILE_SIZE + 1));
 
-void Render::initialize(sf::RenderWindow& window) {
+double bound(double angle) {
+    if (angle < 0.0) angle += 360.0;
+    else if (angle >= 360.0) angle -= 360.0;
+    return angle;
+}
+
+sf::Color determineDepthShade(double distance) {
+    double depthColor = distance / fogValue;
+    if (depthColor > 1.0) depthColor = 1.0;
+    depthColor *= 255;
+    int col = (255 - depthColor);
+    sf::Color depthShade(col, col, col);
+    return depthShade;
+}
+
+void Render::setup(sf::RenderWindow& window) {
     // context settings
     sf::ContextSettings settings;
     settings.antialiasingLevel = Constants::ANTI_ALIASING_LEVEL;
 
-    // create the window
+    // create the window with context settings
     window.create(sf::VideoMode(Constants::WIDTH, Constants::HEIGHT), Constants::TITLE, sf::Style::Default, settings);
 
-    // set window properties
+    // center window
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
     window.setPosition(sf::Vector2i((mode.width/2)-Constants::WIDTH_2, (mode.height/2)-(Constants::HEIGHT_2)));
+
+    // create pixel buffer texture and attach to sprite
+    pixelBufferTexture.create(Constants::WIDTH, Constants::HEIGHT);
+    pixelBufferSprite.setTexture(pixelBufferTexture);
+
+    // populate cosine lookup table
+    double playerAngleDiff = Constants::FOV_2_D;
+    for (int i = 0; i < Constants::WIDTH; i++) {
+        cosLookUp[i] = cos(playerAngleDiff * M_PI/180.0);
+        invCosLookUp[i] = 1 / cosLookUp[i];
+        playerAngleDiff -= Constants::ANGLE_BETWEEN_RAYS;
+    }
 }
 
 void Render::drawTitleScreen(sf::RenderWindow& window) {
@@ -44,24 +79,22 @@ void Render::drawTitleScreen(sf::RenderWindow& window) {
 void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
     double angle = player.angle + Constants::FOV_2_D;
 
-    sf::Uint8 pixels[Constants::WIDTH * Constants::HEIGHT * 4];
-    sf::Texture floorAndCeilingTexture;
-    floorAndCeilingTexture.create(Constants::WIDTH, Constants::HEIGHT);
-    sf::Sprite floorAndCeilingSprite(floorAndCeilingTexture);
-    std::memset(pixels, 0, sizeof(pixels));
+    double distance;
+    double verticalDistance;
+    double horizontalDistance;
+    double correctDistance;
+    double projectedSliceHeight;
+    double wallScale;
+
+    int textureOffset;
+    int subimageOffsetX;
+    int subimageOffsetY;
 
     for (int x = 0; x < Constants::WIDTH; x++) {
-        if (angle < 0.0) angle += 360.0;
-        else if (angle >= 360.0) angle -= 360.0;
+        angle = bound(angle);
 
-        double verticalDistance = verticalIntersection(angle, player, level);
-        double horizontalDistance = horizontalIntersection(angle, player, level);
-
-        double distance;
-
-        int textureOffset;
-        int subimageOffsetX;
-        int subimageOffsetY;
+        verticalDistance = verticalIntersection(angle, player, level);
+        horizontalDistance = horizontalIntersection(angle, player, level);
 
         if (horizontalDistance < verticalDistance) {
             distance = horizontalDistance;
@@ -74,28 +107,29 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             subimageOffsetX = subimageOffsetVerticalX;
             subimageOffsetY = subimageOffsetVerticalY;
         }
-        double correctDistance = distance*cos((angle-player.angle)*M_PI/180.0);
-        double projectedSliceHeight = Constants::DISTANCE_TO_PROJECTION*Constants::TILE_SIZE/correctDistance;
+        correctDistance = distance * cosLookUp[x];
+        projectedSliceHeight = Constants::DISTANCE_TO_PROJECTION_TILE_SIZE / correctDistance;
+        wallScale = projectedSliceHeight / Constants::TILE_SIZE;
+        sf::Color wallDepthShade = determineDepthShade(distance);
 
         level.zBuffer[x] = distance;
 
-        // depth shading
-        double wallDepth = distance / fogValue;
-        if (wallDepth > 1.0) wallDepth = 1.0;
-        wallDepth *= 255;
-        int wallCol = 255-wallDepth;
-        sf::Color wallDepthShade(wallCol, wallCol, wallCol);
-
-        double wallScale = projectedSliceHeight / Constants::TILE_SIZE;
-
         int wallCounter = 0;
 
-        for (int y = (Constants::HEIGHT_2-int(projectedSliceHeight/2)); y < (Constants::HEIGHT_2+int(projectedSliceHeight/2)); y++) {
-            if (y < 0 || y >= Constants::HEIGHT) {
-                wallCounter++;
-                continue;
-            }
-            int index = (y * Constants::WIDTH + x) * 4;
+        int wallTop = Constants::HEIGHT_2 - int(projectedSliceHeight/2);
+        if (wallTop < 0) {
+            wallCounter += -wallTop;
+            wallTop = 0;
+        }
+
+        int wallBottom = Constants::HEIGHT_2 + int(projectedSliceHeight/2);
+        if (wallBottom >= Constants::HEIGHT) {
+            wallBottom = (Constants::HEIGHT-1);
+        }
+
+        int index = (wallTop * Constants::WIDTH + x) * 4;
+        int indexAdd = (Constants::WIDTH * 4);
+        for (int y = wallTop; y < wallBottom; y++) {
             sf::Color wallColor = Texture::wallTextureImage.getPixel(subimageOffsetX+textureOffset, subimageOffsetY+int(wallCounter/wallScale));
             wallColor *= wallDepthShade;
 
@@ -105,11 +139,12 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             pixels[index+3] = wallColor.a;
 
             wallCounter++;
+            index += indexAdd;
         }
 
         int counter = 0;
 
-        float correction = 1/cos((player.angle-angle)*M_PI/180);
+        float correction = invCosLookUp[x];
         float xComponent = cos(angle*M_PI/180);
         float yComponent = -sin(angle*M_PI/180);
         int denom = int(projectedSliceHeight/2);
@@ -154,8 +189,8 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         }
         angle -= Constants::ANGLE_BETWEEN_RAYS;
     }
-    floorAndCeilingTexture.update(pixels);
-    window.draw(floorAndCeilingSprite);
+    pixelBufferTexture.update(pixels);
+    window.draw(pixelBufferSprite);
 }
 
 double verticalIntersection(double angle, Player& player, Level& level) {
@@ -368,3 +403,9 @@ void Render::drawWeapon(sf::RenderWindow& window, Player& player) {
         window.draw(Texture::weaponSprite);
     }
 }
+
+void Render::cleanup() {
+    delete [] pixels;
+    pixels = NULL;
+}
+
