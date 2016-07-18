@@ -55,6 +55,12 @@ void Update::checkMovement(Player& player, Level& level) {
             player.y = tempY;
         }
     }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+        player.offset = 128;
+    } else {
+        player.offset = 0;
+    }
 }
 
 void Update::checkWeapon(Player& player) {

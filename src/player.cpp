@@ -11,6 +11,8 @@ Player::Player(const char* fileName) {
     this->xp = 0.0;
     this->attack = 1.0;
     this->attacking = false;
+    this->height = 32.0;
+    this->offset = 0;
 
     std::string line;
 
