@@ -233,10 +233,13 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     if (level.map[row][column] == 1) {
         subimageOffsetVerticalX = 0*65;
         subimageOffsetVerticalY = 2*65;
-    } else if (level.map[row][column] == 2) {
-        subimageOffsetVerticalX = 6*65;
-        subimageOffsetVerticalY = 2*65;
-    }
+    } else if (level.map[row][column] == Constants::FLAG) {
+        subimageOffsetVerticalX = 2*65;
+        subimageOffsetVerticalY = 6*65;
+        double tempDistance = (verticalX+(dx/2.0)-player.x)*(verticalX+(dx/2.0)-player.x)+(verticalY+(dy/2.0)-player.y)*(verticalY+(dy/2.0)-player.y);
+        textureOffsetVertical = int(verticalY + (dy/2.0)-(row * Constants::TILE_SIZE));
+        return sqrt(tempDistance);
+   }
     double tempDistance = ((verticalX-player.x)*(verticalX-player.x))+
                           ((verticalY-player.y)*(verticalY-player.y));
     return sqrt(tempDistance);
@@ -295,9 +298,12 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     if (level.map[row][column] == 1) {
         subimageOffsetHorizontalX = 0*65;
         subimageOffsetHorizontalY = 2*65;
-    } else if (level.map[row][column] == 2) {
-        subimageOffsetHorizontalX = 6*65;
-        subimageOffsetHorizontalY = 2*65;
+    } else if (level.map[row][column] == Constants::FLAG) {
+        subimageOffsetHorizontalX = 2*65;
+        subimageOffsetHorizontalY = 6*65;
+        double tempDistance = (horizontalX+(dx/2.0)-player.x)*(horizontalX+(dx/2.0)-player.x)+(horizontalY+(dy/2.0)-player.y)*(horizontalY+(dy/2.0)-player.y);
+        textureOffsetHorizontal = int(horizontalX + (dx/2.0)-(column * Constants::TILE_SIZE));
+        return sqrt(tempDistance);
     }
     double tempDistance = (horizontalX-player.x)*(horizontalX-player.x)+
                           (horizontalY-player.y)*(horizontalY-player.y);
