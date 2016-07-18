@@ -8,9 +8,6 @@
 #include "texture.h"
 #include "update.h"
 
-static sf::RectangleShape backgroundFloor;
-static sf::RectangleShape backgroundCeiling;
-
 double verticalIntersection(double, Player&, Level&);
 double horizontalIntersection(double, Player&, Level&);
 
@@ -33,24 +30,11 @@ void Render::initialize(sf::RenderWindow& window) {
     settings.antialiasingLevel = Constants::ANTI_ALIASING_LEVEL;
 
     // create the window
-    //window.create(sf::VideoMode(Constants::WIDTH, Constants::HEIGHT), Constants::TITLE, sf::Style::Default, settings);
-
-    window.create(sf::VideoMode(Constants::WIDTH, Constants::HEIGHT), "The Abyss");
-
-    window.setVerticalSyncEnabled(false);
+    window.create(sf::VideoMode(Constants::WIDTH, Constants::HEIGHT), Constants::TITLE, sf::Style::Default, settings);
 
     // set window properties
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
     window.setPosition(sf::Vector2i((mode.width/2)-Constants::WIDTH_2, (mode.height/2)-(Constants::HEIGHT_2)));
-
-    // create floor and ceiling background sizes/colors/positions
-    backgroundFloor.setSize(sf::Vector2f(Constants::WIDTH, Constants::HEIGHT_2));
-    backgroundFloor.setFillColor(sf::Color(0, 0, 0));
-    backgroundFloor.setPosition(0, Constants::HEIGHT_2);
-
-    backgroundCeiling.setSize(sf::Vector2f(Constants::WIDTH, Constants::HEIGHT_2));
-    backgroundCeiling.setFillColor(sf::Color(0, 0, 0));
-    backgroundCeiling.setPosition(0, 0);
 }
 
 void Render::drawTitleScreen(sf::RenderWindow& window) {
@@ -300,11 +284,6 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     double tempDistance = (horizontalX-player.x)*(horizontalX-player.x)+
                           (horizontalY-player.y)*(horizontalY-player.y);
     return sqrt(tempDistance);
-}
-
-void Render::drawBackground(sf::RenderWindow& window) {
-    window.draw(backgroundFloor);
-    window.draw(backgroundCeiling);
 }
 
 void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level) {
