@@ -77,7 +77,7 @@ void Render::drawTitleScreen(sf::RenderWindow& window) {
 }
 
 void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
-    double angle = player.angle + Constants::FOV_2_D;
+    double angle; //= player.angle + Constants::FOV_2_D;
 
     double distance;
     double verticalDistance;
@@ -91,7 +91,8 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
     int subimageOffsetY;
 
     for (int x = 0; x < Constants::WIDTH; x++) {
-        angle = bound(angle);
+        double ang = atan(float(x - Constants::WIDTH_2) / Constants::DISTANCE_TO_PROJECTION);
+        angle = bound(player.angle+(ang*180.0/M_PI));
 
         verticalDistance = verticalIntersection(angle, player, level);
         horizontalDistance = horizontalIntersection(angle, player, level);
@@ -109,8 +110,7 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             subimageOffsetX = subimageOffsetVerticalX;
             subimageOffsetY = subimageOffsetVerticalY;
         }
-
-        correctDistance = distance * cosLookUp[x];
+        correctDistance = distance * cos(ang);
         projectedSliceHeight = Constants::DISTANCE_TO_PROJECTION_TILE_SIZE / correctDistance;
         wallScale = projectedSliceHeight / Constants::TILE_SIZE;
         sf::Color wallDepthShade = determineDepthShade(distance);
@@ -126,8 +126,8 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         }
 
         int wallBottom = Constants::HEIGHT_2 + int(projectedSliceHeight/2);
-        if (wallBottom > Constants::HEIGHT) {
-            wallBottom = Constants::HEIGHT;
+        if (wallBottom >= Constants::HEIGHT) {
+            wallBottom = Constants::HEIGHT-1;
         }
 
         int index = (wallTop * Constants::WIDTH + x) * 4;
@@ -147,7 +147,7 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
 
         int counter = 0;
 
-        float correction = invCosLookUp[x];
+        float correction = 1.0f/cos(ang);//invCosLookUp[x];
         float xComponent = cos(angle*M_PI/180);
         float yComponent = -sin(angle*M_PI/180);
         int denom = int(projectedSliceHeight/2);
