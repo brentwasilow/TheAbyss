@@ -98,15 +98,18 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
 
         if (horizontalDistance < verticalDistance) {
             distance = horizontalDistance;
+
             textureOffset = textureOffsetHorizontal;
             subimageOffsetX = subimageOffsetHorizontalX;
             subimageOffsetY = subimageOffsetHorizontalY;
         } else {
             distance = verticalDistance;
+
             textureOffset = textureOffsetVertical;
             subimageOffsetX = subimageOffsetVerticalX;
             subimageOffsetY = subimageOffsetVerticalY;
         }
+
         correctDistance = distance * cosLookUp[x];
         projectedSliceHeight = Constants::DISTANCE_TO_PROJECTION_TILE_SIZE / correctDistance;
         wallScale = projectedSliceHeight / Constants::TILE_SIZE;
@@ -230,25 +233,30 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     }
     textureOffsetVertical = int(verticalY) - (row * Constants::TILE_SIZE);
 
-    if (level.map[row][column] == 1) {
+    // determine wall type
+    if (level.map[row][column] == Constants::BRICK) {
         subimageOffsetVerticalX = 0*65;
         subimageOffsetVerticalY = 2*65;
-
-        if (column+1 < int(level.map[row].size()) && level.map[row][column+1] == Constants::DOOR) {
-            subimageOffsetVerticalX = 4*65;
-            subimageOffsetVerticalY = 6*65;
-        }
-        if (column-1 >= 0 && level.map[row][column-1] == Constants::DOOR) {
-            subimageOffsetVerticalX = 4*65;
-            subimageOffsetVerticalY = 6*65;
-        }
     } else if (level.map[row][column] == Constants::DOOR) {
         subimageOffsetVerticalX = 2*65;
         subimageOffsetVerticalY = 6*65;
         double tempDistance = (verticalX+(dx/2.0)-player.x)*(verticalX+(dx/2.0)-player.x)+(verticalY+(dy/2.0)-player.y)*(verticalY+(dy/2.0)-player.y);
-        textureOffsetVertical = int(verticalY + (dy/2.0)-(row * Constants::TILE_SIZE));
+        textureOffsetVertical = int(verticalY+(dy/2.0)-(row*Constants::TILE_SIZE));
         return sqrt(tempDistance);
-   }
+    }
+
+    // check if wall is next to a door so we can render the adjoining door wall correctly
+    // also perform short circuit evaluation to ensure that array index is not out of bounds
+    if (column+1 < int(level.map[row].size()) && level.map[row][column+1] == Constants::DOOR) {
+        //&& column-1 >= 0 && level.map[row][column-1] == Constants::DOOR) {
+        subimageOffsetVerticalX = 4*65;
+        subimageOffsetVerticalY = 6*65;
+    }
+    if (column-1 >= 0 && level.map[row][column-1] == Constants::DOOR) {
+        subimageOffsetVerticalX = 4*65;
+        subimageOffsetVerticalY = 6*65;
+    }
+
     double tempDistance = ((verticalX-player.x)*(verticalX-player.x))+
                           ((verticalY-player.y)*(verticalY-player.y));
     return sqrt(tempDistance);
@@ -304,25 +312,29 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     }
     textureOffsetHorizontal = int(horizontalX) - (column * Constants::TILE_SIZE);
 
+    // determine wall type
     if (level.map[row][column] == Constants::BRICK) {
         subimageOffsetHorizontalX = 0*65;
         subimageOffsetHorizontalY = 2*65;
-
-        if (row+1 < int(level.map.size()) && level.map[row+1][column] == Constants::DOOR) {
-            subimageOffsetHorizontalX = 4 * 65;
-            subimageOffsetHorizontalY = 6 * 65;
-        }
-        if (row-1 >= 0 && level.map[row-1][column] == Constants::DOOR) {
-            subimageOffsetHorizontalX = 4*65;
-            subimageOffsetHorizontalY = 6*65;
-        }
     } else if (level.map[row][column] == Constants::DOOR) {
         subimageOffsetHorizontalX = 2*65;
         subimageOffsetHorizontalY = 6*65;
         double tempDistance = (horizontalX+(dx/2.0)-player.x)*(horizontalX+(dx/2.0)-player.x)+(horizontalY+(dy/2.0)-player.y)*(horizontalY+(dy/2.0)-player.y);
-        textureOffsetHorizontal = int(horizontalX + (dx/2.0)-(column * Constants::TILE_SIZE));
+        textureOffsetHorizontal = int(horizontalX+(dx/2.0)-(column * Constants::TILE_SIZE));
         return sqrt(tempDistance);
     }
+
+    // check if wall is next to a door so we can render the adjoining door wall correctly
+    // also perform short circuit evaluation to ensure that array index is not out of bounds
+    if (row+1 < int(level.map.size()) && level.map[row+1][column] == Constants::DOOR) {
+        subimageOffsetHorizontalX = 4 * 65;
+        subimageOffsetHorizontalY = 6 * 65;
+    }
+    if (row-1 >= 0 && level.map[row-1][column] == Constants::DOOR) {
+        subimageOffsetHorizontalX = 4*65;
+        subimageOffsetHorizontalY = 6*65;
+    }
+
     double tempDistance = (horizontalX-player.x)*(horizontalX-player.x)+
                           (horizontalY-player.y)*(horizontalY-player.y);
     return sqrt(tempDistance);
