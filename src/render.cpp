@@ -202,7 +202,7 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     double dx;
     double dy;
     double t = tan(angle * M_PI / 180.0);
-
+    double it = tan(-angle * M_PI / 180.0);
     if (angle == 90.0 || angle == 270.0) return 100000000.0;
 
     if (angle > 90.0 && angle < 270.0) {
