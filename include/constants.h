@@ -31,7 +31,7 @@ namespace Constants {
 
     extern const int EMPTY;
     extern const int BRICK;
-    extern const int FLAG;
+    extern const int DOOR;
     extern const int PLAYER;
 
     extern const std::string DELIM;

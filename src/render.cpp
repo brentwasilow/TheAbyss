@@ -123,8 +123,8 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         }
 
         int wallBottom = Constants::HEIGHT_2 + int(projectedSliceHeight/2);
-        if (wallBottom >= Constants::HEIGHT) {
-            wallBottom = (Constants::HEIGHT-1);
+        if (wallBottom > Constants::HEIGHT) {
+            wallBottom = Constants::HEIGHT;
         }
 
         int index = (wallTop * Constants::WIDTH + x) * 4;
@@ -233,11 +233,16 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     if (level.map[row][column] == 1) {
         subimageOffsetVerticalX = 0*65;
         subimageOffsetVerticalY = 2*65;
-        if (level.map[row][column+1] == Constants::FLAG || level.map[row][column-1] == Constants::FLAG) {
+
+        if (column+1 < int(level.map[row].size()) && level.map[row][column+1] == Constants::DOOR) {
             subimageOffsetVerticalX = 4*65;
             subimageOffsetVerticalY = 6*65;
         }
-    } else if (level.map[row][column] == Constants::FLAG) {
+        if (column-1 >= 0 && level.map[row][column-1] == Constants::DOOR) {
+            subimageOffsetVerticalX = 4*65;
+            subimageOffsetVerticalY = 6*65;
+        }
+    } else if (level.map[row][column] == Constants::DOOR) {
         subimageOffsetVerticalX = 2*65;
         subimageOffsetVerticalY = 6*65;
         double tempDistance = (verticalX+(dx/2.0)-player.x)*(verticalX+(dx/2.0)-player.x)+(verticalY+(dy/2.0)-player.y)*(verticalY+(dy/2.0)-player.y);
@@ -299,14 +304,19 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     }
     textureOffsetHorizontal = int(horizontalX) - (column * Constants::TILE_SIZE);
 
-    if (level.map[row][column] == 1) {
+    if (level.map[row][column] == Constants::BRICK) {
         subimageOffsetHorizontalX = 0*65;
         subimageOffsetHorizontalY = 2*65;
-        if (level.map[row-1][column] == Constants::FLAG || level.map[row+1][column] == Constants::FLAG) {
+
+        if (row+1 < int(level.map.size()) && level.map[row+1][column] == Constants::DOOR) {
+            subimageOffsetHorizontalX = 4 * 65;
+            subimageOffsetHorizontalY = 6 * 65;
+        }
+        if (row-1 >= 0 && level.map[row-1][column] == Constants::DOOR) {
             subimageOffsetHorizontalX = 4*65;
             subimageOffsetHorizontalY = 6*65;
         }
-    } else if (level.map[row][column] == Constants::FLAG) {
+    } else if (level.map[row][column] == Constants::DOOR) {
         subimageOffsetHorizontalX = 2*65;
         subimageOffsetHorizontalY = 6*65;
         double tempDistance = (horizontalX+(dx/2.0)-player.x)*(horizontalX+(dx/2.0)-player.x)+(horizontalY+(dy/2.0)-player.y)*(horizontalY+(dy/2.0)-player.y);

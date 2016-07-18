@@ -31,7 +31,7 @@ namespace Constants {
 
     const int EMPTY = 0;
     const int BRICK = 1;
-    const int FLAG = 2;
+    const int DOOR = 2;
     const int PLAYER = 3;
 
     const std::string DELIM = ":=";
