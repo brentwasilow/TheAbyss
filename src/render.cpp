@@ -233,6 +233,10 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     if (level.map[row][column] == 1) {
         subimageOffsetVerticalX = 0*65;
         subimageOffsetVerticalY = 2*65;
+        if (level.map[row][column+1] == Constants::FLAG || level.map[row][column-1] == Constants::FLAG) {
+            subimageOffsetVerticalX = 4*65;
+            subimageOffsetVerticalY = 6*65;
+        }
     } else if (level.map[row][column] == Constants::FLAG) {
         subimageOffsetVerticalX = 2*65;
         subimageOffsetVerticalY = 6*65;
@@ -298,6 +302,10 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     if (level.map[row][column] == 1) {
         subimageOffsetHorizontalX = 0*65;
         subimageOffsetHorizontalY = 2*65;
+        if (level.map[row-1][column] == Constants::FLAG || level.map[row+1][column] == Constants::FLAG) {
+            subimageOffsetHorizontalX = 4*65;
+            subimageOffsetHorizontalY = 6*65;
+        }
     } else if (level.map[row][column] == Constants::FLAG) {
         subimageOffsetHorizontalX = 2*65;
         subimageOffsetHorizontalY = 6*65;
