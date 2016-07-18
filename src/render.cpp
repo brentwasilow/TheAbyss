@@ -90,8 +90,6 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
 
         int wallCounter = 0;
 
-//        Texture::wallTextureSprite.setColor(wallDepthShade);
-
         for (int y = (Constants::HEIGHT_2-int(projectedSliceHeight/2)); y < (Constants::HEIGHT_2+int(projectedSliceHeight/2)); y++) {
             if (y < 0 || y >= Constants::HEIGHT) {
                 wallCounter++;
@@ -109,14 +107,7 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             wallCounter++;
         }
 
-//        Texture::wallTextureSprite.setTextureRect(sf::IntRect(subimageOffsetX+textureOffset, subimageOffsetY, 1, 64));
-//        sf::Vector2f targetSize(1.0f, projectedSliceHeight);
-//        Texture::wallTextureSprite.setScale(targetSize.x/Texture::wallTextureSprite.getLocalBounds().width, targetSize.y/Texture::wallTextureSprite.getLocalBounds().height);
-//        Texture::wallTextureSprite.setPosition(x, (Constants::HEIGHT_2)-(projectedSliceHeight/2.0));
-//        window.draw(Texture::wallTextureSprite);
-
         int counter = 0;
-//        Texture::wallTextureSprite.setScale(scale.x, scale.y);
 
         float correction = 1/cos((player.angle-angle)*M_PI/180);
         float xComponent = cos(angle*M_PI/180);
@@ -158,14 +149,6 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             pixels[ceilingIndex + 1] = color.g;
             pixels[ceilingIndex + 2] = color.b;
             pixels[ceilingIndex + 3] = color.a;
-
-            //Texture::wallTextureSprite.setTextureRect(sf::IntRect((floorTexOffsetX)+texX, (floorTexOffsetY)+texY, 1, 1));
-            //Texture::wallTextureSprite.setPosition(x, y);
-            //window.draw(Texture::wallTextureSprite);
-
-            //Texture::wallTextureSprite.setScale(1.0f, -1.0f);
-            //Texture::wallTextureSprite.setPosition(x, Constants::HEIGHT_2-1-int(projectedSliceHeight/2.0f)-counter);
-            //window.draw(Texture::wallTextureSprite);
 
             counter++;
         }
