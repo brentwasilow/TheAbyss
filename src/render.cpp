@@ -29,8 +29,8 @@ static double* invCosLookUp = new double[Constants::WIDTH];
 // file-only global constant variables
 static const double fogValue = (16 * Constants::TILE_SIZE);
 static const float numerator = 32.0f * Constants::DISTANCE_TO_PROJECTION;
-static const int floorTexOffsetX = (1 * (Constants::TILE_SIZE + 1));
-static const int floorTexOffsetY = (0 * (Constants::TILE_SIZE + 1));
+static const int floorTexOffsetX = ((5) * (Constants::TILE_SIZE + 1));
+static const int floorTexOffsetY = ((4) * (Constants::TILE_SIZE + 1));
 
 double bound(double angle) {
     if (angle < 0.0) angle += 360.0;
@@ -152,7 +152,7 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         float yComponent = -sin(angle*M_PI/180);
         int denom = int(projectedSliceHeight/2);
 
-        int ceilingOffset = Constants::HEIGHT_2-int(projectedSliceHeight/2.0f)-1;
+        int ceilingOffset = Constants::HEIGHT_2-int(projectedSliceHeight/2)-1;
 
         for (int y = Constants::HEIGHT_2+int(projectedSliceHeight/2); y < Constants::HEIGHT; y++) {
             float wallDistance = numerator / denom;
@@ -249,11 +249,11 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     // also perform short circuit evaluation to ensure that array index is not out of bounds
     if (column+1 < int(level.map[row].size()) && level.map[row][column+1] == Constants::DOOR) {
         //&& column-1 >= 0 && level.map[row][column-1] == Constants::DOOR) {
-        subimageOffsetVerticalX = 4*65;
+        subimageOffsetVerticalX = 5*65;
         subimageOffsetVerticalY = 6*65;
     }
     if (column-1 >= 0 && level.map[row][column-1] == Constants::DOOR) {
-        subimageOffsetVerticalX = 4*65;
+        subimageOffsetVerticalX = 5*65;
         subimageOffsetVerticalY = 6*65;
     }
 
@@ -327,11 +327,11 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     // check if wall is next to a door so we can render the adjoining door wall correctly
     // also perform short circuit evaluation to ensure that array index is not out of bounds
     if (row+1 < int(level.map.size()) && level.map[row+1][column] == Constants::DOOR) {
-        subimageOffsetHorizontalX = 4 * 65;
+        subimageOffsetHorizontalX = 5 * 65;
         subimageOffsetHorizontalY = 6 * 65;
     }
     if (row-1 >= 0 && level.map[row-1][column] == Constants::DOOR) {
-        subimageOffsetHorizontalX = 4*65;
+        subimageOffsetHorizontalX = 5*65;
         subimageOffsetHorizontalY = 6*65;
     }
 
