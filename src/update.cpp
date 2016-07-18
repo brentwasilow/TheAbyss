@@ -26,13 +26,13 @@ void Update::checkTitleToGameState() {
 void Update::checkMovement(Player& player, Level& level) {
     // change viewing angle
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        player.angle -= player.angleSpeed;
-
-        if (player.angle < 0.0) player.angle += 360.0;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         player.angle += player.angleSpeed;
 
         if (player.angle > 359.0) player.angle -= 360.0;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        player.angle -= player.angleSpeed;
+
+        if (player.angle < 0.0) player.angle += 360.0;
     }
 
     // change x and y coordinates
