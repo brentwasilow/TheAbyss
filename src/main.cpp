@@ -63,8 +63,8 @@ void render(sf::RenderWindow& window, Player& player, Level& level) {
             break;
         case 1:
             Render::drawMap(window, player, level);
-//            Render::drawEnemies(window, player, level);
-//            Render::drawWeapon(window, player);
+            Render::drawEnemies(window, player, level);
+            Render::drawWeapon(window, player);
             break;
     }
     window.display();
