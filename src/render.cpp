@@ -66,7 +66,7 @@ void Render::drawTitleScreen(sf::RenderWindow& window) {
 }
 
 void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
-    float numerator = player.height * Constants::DISTANCE_TO_PROJECTION;
+    double numerator = player.height * Constants::DISTANCE_TO_PROJECTION;
     double angle;
 
     double distance;
@@ -81,9 +81,8 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
     int subimageOffsetY;
 
     for (int x = 0; x < Constants::WIDTH; x++) {
-        double ang = atan(float(x - Constants::WIDTH_2) / Constants::DISTANCE_TO_PROJECTION);
+        double ang = atan(double(x-Constants::WIDTH_2) / Constants::DISTANCE_TO_PROJECTION);
         angle = bound(player.angle+(ang*180.0/M_PI));
-
         verticalDistance = verticalIntersection(angle, player, level);
         horizontalDistance = horizontalIntersection(angle, player, level);
 
@@ -122,7 +121,7 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
 
         int index = (wallTop * Constants::WIDTH + x) * 4;
         int indexAdd = (Constants::WIDTH * 4);
-        for (int y = wallTop; y < wallBottom; y++) {
+        for (int y = wallTop; y <= wallBottom; y++) {
             sf::Color wallColor = Texture::wallTextureImage.getPixel(subimageOffsetX+textureOffset, subimageOffsetY+int(wallCounter/wallScale));
             wallColor *= wallDepthShade;
 
@@ -141,8 +140,7 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         float yComponent = -sin(angle*M_PI/180);
         int denom = int(ceil(projectedSliceHeight)/2);
 
-        //int ceilingOffset = wallTop;
-        for (int y = wallBottom; y < Constants::HEIGHT; y++) {
+        for (int y = wallBottom+1; y <= Constants::HEIGHT; y++) {
             float wallDistance = numerator / denom;
             float correctWallDistance = wallDistance * correction;
             denom++;
@@ -154,33 +152,23 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             int texY = int(changeInY) & 63;
 
             // depth shading
-            double floorDepth = correctWallDistance / fogValue;
-            if (floorDepth > 1.0) floorDepth = 1.0;
-            floorDepth *= 255;
-            int floorCol = 255-floorDepth;
-            sf::Color floorDepthShade(floorCol, floorCol, floorCol);
+            sf::Color floorDepthShade = determineDepthShade(correctWallDistance);
 
             sf::Color color = Texture::wallTextureImage.getPixel(floorTexOffsetX+texX, floorTexOffsetY+texY);
             color *= floorDepthShade;
 
             int floorIndex = (y * Constants::WIDTH + x) * 4;
-            //int ceilingIndex = ((ceilingOffset-counter) * Constants::WIDTH + x) * 4;
 
             pixels[floorIndex] = color.r;
             pixels[floorIndex + 1] = color.g;
             pixels[floorIndex + 2] = color.b;
             pixels[floorIndex + 3] = color.a;
 
-            //pixels[ceilingIndex] = color.r;
-            //pixels[ceilingIndex + 1] = color.g;
-            //pixels[ceilingIndex + 2] = color.b;
-            //pixels[ceilingIndex + 3] = color.a;
-
             counter++;
         }
-        numerator = player.height * Constants::DISTANCE_TO_PROJECTION;
+        //numerator = player.height * Constants::DISTANCE_TO_PROJECTION;
         denom = int(ceil(projectedSliceHeight)/2);
-        for (int y = wallTop; y >= 0; y--) {
+        for (int y = wallTop-1; y >= 0; y--) {
             float wallDistance = numerator / denom;
             float correctWallDistance = wallDistance * correction;
             denom++;
@@ -192,14 +180,10 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             int texY = int(changeInY) & 63;
 
             // depth shading
-            double floorDepth = correctWallDistance / fogValue;
-            if (floorDepth > 1.0) floorDepth = 1.0;
-            floorDepth *= 255;
-            int floorCol = 255-floorDepth;
-            sf::Color floorDepthShade(floorCol, floorCol, floorCol);
+            sf::Color ceilDepthShade = determineDepthShade(correctWallDistance);
 
             sf::Color color = Texture::wallTextureImage.getPixel(floorTexOffsetX+texX, floorTexOffsetY+texY);
-            color *= floorDepthShade;
+            color *= ceilDepthShade;
 
             int ceilingIndex = (y * Constants::WIDTH + x) * 4;
 
@@ -224,13 +208,13 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     if (angle == 90.0 || angle == 270.0) return 100000000.0;
 
     if (angle > 90.0 && angle < 270.0) {
-        verticalX = (int(player.x) / Constants::TILE_SIZE) * Constants::TILE_SIZE;
+        verticalX = floor(player.x / Constants::TILE_SIZE) * Constants::TILE_SIZE;
         dx = -Constants::TILE_SIZE;
         verticalY = player.y + (player.x - verticalX) * t;
         dy = t * Constants::TILE_SIZE;
         verticalX--;
     } else {
-        verticalX = ((int(player.x) / Constants::TILE_SIZE) * Constants::TILE_SIZE) + Constants::TILE_SIZE;
+        verticalX = (floor(player.x / Constants::TILE_SIZE) * Constants::TILE_SIZE) + Constants::TILE_SIZE;
         dx = Constants::TILE_SIZE;
         verticalY = player.y + (player.x - verticalX) * t;
         dy = -t * Constants::TILE_SIZE;
@@ -249,7 +233,7 @@ double verticalIntersection(double angle, Player& player, Level& level) {
 
         if (row < 0 || row >= int(level.map.size()) || column < 0 || column >= int(level.map[0].size())) return 100000000.0;
     }
-    textureOffsetVertical = int(verticalY) - (row * Constants::TILE_SIZE);
+    textureOffsetVertical = int(verticalY)-(row * Constants::TILE_SIZE);
 
     // determine wall type
     if (level.map[row][column] == Constants::BRICK) {
@@ -258,15 +242,15 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     } else if (level.map[row][column] == Constants::DOOR) {
         subimageOffsetVerticalX = 2*65;
         subimageOffsetVerticalY = 6*65;
-        double tempDistance = (verticalX+(dx/2.0)-player.x)*(verticalX+(dx/2.0)-player.x)+(verticalY+(dy/2.0)-player.y)*(verticalY+(dy/2.0)-player.y);
-        textureOffsetVertical = int(verticalY+(dy/2.0)-(row*Constants::TILE_SIZE));
+        double tempDistance = (int(verticalX)+(dx/2.0)-int(player.x))*(int(verticalX)+(dx/2.0)-int(player.x))+
+                              (int(verticalY)+(dy/2.0)-int(player.y))*(int(verticalY)+(dy/2.0)-int(player.y));
+        textureOffsetVertical = int(verticalY)+(dy/2.0)-(row*Constants::TILE_SIZE);
         return sqrt(tempDistance);
     }
 
     // check if wall is next to a door so we can render the adjoining door wall correctly
     // also perform short circuit evaluation to ensure that array index is not out of bounds
     if (column+1 < int(level.map[row].size()) && level.map[row][column+1] == Constants::DOOR) {
-        //&& column-1 >= 0 && level.map[row][column-1] == Constants::DOOR) {
         subimageOffsetVerticalX = 5*65;
         subimageOffsetVerticalY = 6*65;
     }
@@ -274,9 +258,8 @@ double verticalIntersection(double angle, Player& player, Level& level) {
         subimageOffsetVerticalX = 5*65;
         subimageOffsetVerticalY = 6*65;
     }
-
-    double tempDistance = ((verticalX-player.x)*(verticalX-player.x))+
-                          ((verticalY-player.y)*(verticalY-player.y));
+    double tempDistance = (int(verticalX)-int(player.x))*(int(verticalX)-int(player.x))+
+                          (int(verticalY)-int(player.y))*(int(verticalY)-int(player.y));
     return sqrt(tempDistance);
 }
 
@@ -291,7 +274,7 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     if (angle == 0.0 || angle == 180.0) return 100000000.0;
 
     if (angle > 0.0 && angle < 180.0) {
-        horizontalY = (int(player.y) / Constants::TILE_SIZE) * Constants::TILE_SIZE;
+        horizontalY = (floor(player.y/Constants::TILE_SIZE) * Constants::TILE_SIZE);
         dy = -Constants::TILE_SIZE;
 
         if (angle == 90.0) {
@@ -303,7 +286,7 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
         }
         horizontalY--;
     } else {
-        horizontalY = ((int(player.y)/Constants::TILE_SIZE)*Constants::TILE_SIZE) + Constants::TILE_SIZE;
+        horizontalY = (floor(player.y/Constants::TILE_SIZE)*Constants::TILE_SIZE) + Constants::TILE_SIZE;
         dy = Constants::TILE_SIZE;
 
         if (angle == -270.0) {
@@ -337,8 +320,9 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     } else if (level.map[row][column] == Constants::DOOR) {
         subimageOffsetHorizontalX = 2*65;
         subimageOffsetHorizontalY = 6*65;
-        double tempDistance = (horizontalX+(dx/2.0)-player.x)*(horizontalX+(dx/2.0)-player.x)+(horizontalY+(dy/2.0)-player.y)*(horizontalY+(dy/2.0)-player.y);
-        textureOffsetHorizontal = int(horizontalX+(dx/2.0)-(column * Constants::TILE_SIZE));
+        double tempDistance = (int(horizontalX)+(dx/2.0)-int(player.x))*(int(horizontalX)+(dx/2.0)-int(player.x))+
+                              (int(horizontalY)+(dy/2.0)-int(player.y))*(int(horizontalY)+(dy/2.0)-int(player.y));
+        textureOffsetHorizontal = int(horizontalX)+(dx/2.0)-(column * Constants::TILE_SIZE);
         return sqrt(tempDistance);
     }
 
@@ -353,8 +337,8 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
         subimageOffsetHorizontalY = 6*65;
     }
 
-    double tempDistance = (horizontalX-player.x)*(horizontalX-player.x)+
-                          (horizontalY-player.y)*(horizontalY-player.y);
+    double tempDistance = (int(horizontalX)-int(player.x))*(int(horizontalX)-int(player.x))+
+                          (int(horizontalY)-int(player.y))*(int(horizontalY)-int(player.y));
     return sqrt(tempDistance);
 }
 
