@@ -2,7 +2,7 @@
 #include "constants.h"
 #include <cmath>
 #include "texture.h"
-
+#include <iostream>
 #define _USE_MATH_DEFINES
 
 int Update::state = 1;
@@ -12,8 +12,8 @@ double Update::openDoorTimer = 0.0;
 bool Update::openingDoor = false;
 bool Update::closeDoor = false;
 bool Update::waitingDoor = false;
-int Update::doorRow = 1;
-int Update::doorCol = 1;
+int Update::doorRow = -1;
+int Update::doorCol = -1;
 
 void Update::checkWindowState(sf::RenderWindow& window) {
     sf::Event event;
@@ -78,6 +78,8 @@ void Update::checkDoor(Player& player, Level& level) {
         if (timer <= 0.0) {
             closeDoor = false;
             timer = 0.0;
+            doorRow = -1;
+            doorCol = -1;
         }
     }
 }

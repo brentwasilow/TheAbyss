@@ -226,8 +226,12 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     while (block == Constants::EMPTY || block == Constants::DOOR ||
            block == Constants::DOOR_TRIGGER) {
         if (block == Constants::DOOR) {
-             offset = int(verticalY + (dy/2.0) + 0.5)%64;
-             if (offset >= Update::timer) break;
+             if (row == Update::doorRow && column == Update::doorCol) {
+                 offset = int(verticalY + (dy/2.0) + 0.5)%64;
+                 if (offset >= Update::timer) break;
+             } else {
+                 break;
+             }
         }
 
         verticalX += dx;
@@ -319,8 +323,12 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     while (block == Constants::EMPTY || block == Constants::DOOR ||
            block == Constants::DOOR_TRIGGER) {
         if (block == Constants::DOOR) {
-            offset = int(horizontalX + (dx/2.0)+0.5) & 63;
-            if (offset >= Update::timer) break;
+            if (row == Update::doorRow && column == Update::doorCol) {
+                offset = int(horizontalX + (dx/2.0)+0.5) & 63;
+                if (offset >= Update::timer) break;
+            } else {
+                break;
+            }
         }
 
         horizontalX += dx;
