@@ -7,7 +7,7 @@
 
 int Update::state = 1;
 int Update::weaponOffset = 0;
-int Update::timer = 0;
+double Update::timer = 0;
 
 void Update::checkWindowState(sf::RenderWindow& window) {
     sf::Event event;
@@ -26,10 +26,10 @@ void Update::checkTitleToGameState() {
 
 void Update::checkMovement(Player& player, Level& level) {
     if (timer < 64) {
-        timer++;
+        timer += 0.75;
     }
 
-    if (timer == 64) {
+    if (timer >= 64) {
         timer = 0;
     }
 

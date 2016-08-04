@@ -219,12 +219,15 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     int row = int(verticalY) / Constants::TILE_SIZE;
 
     if (row < 0 || row >= int(level.map.size()) || column < 0 || column >= int(level.map[0].size())) return 100000000.0;
-int offset = 0;
+
+    int offset = 0;
+
     while (level.map[row][column] == 0 || level.map[row][column] == Constants::DOOR) {
         if (level.map[row][column] == Constants::DOOR) {
              offset = int(verticalY + (dy/2.0) + 0.5)%64;
              if (offset >= Update::timer) break;
         }
+
         verticalX += dx;
         verticalY += dy;
 
@@ -301,7 +304,9 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     int row = int(horizontalY) / Constants::TILE_SIZE;
 
     if (row < 0 || row >= int(level.map.size()) || column < 0 || column >= int(level.map[0].size())) return 100000000.0;
-int offset = 0;
+
+    int offset = 0;
+
     while (level.map[row][column] == 0 || level.map[row][column] == Constants::DOOR) {
         if (level.map[row][column] == Constants::DOOR) {
             offset = int(horizontalX + (dx/2.0)+0.5)%64;
