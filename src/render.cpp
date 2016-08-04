@@ -219,8 +219,12 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     int row = int(verticalY) / Constants::TILE_SIZE;
 
     if (row < 0 || row >= int(level.map.size()) || column < 0 || column >= int(level.map[0].size())) return 100000000.0;
-
-    while (level.map[row][column] == 0) {
+int offset = 0;
+    while (level.map[row][column] == 0 || level.map[row][column] == Constants::DOOR) {
+        if (level.map[row][column] == Constants::DOOR) {
+             offset = int(verticalY + (dy/2.0) + 0.5)%64;
+             if (offset >= Update::timer) break;
+        }
         verticalX += dx;
         verticalY += dy;
 
@@ -240,7 +244,7 @@ double verticalIntersection(double angle, Player& player, Level& level) {
         subimageOffsetVerticalY = 6*65;
         double tempDistance = ((verticalX)+(dx/2.0)-(player.x))*((verticalX)+(dx/2.0)-(player.x))+
                               ((verticalY)+(dy/2.0)-(player.y))*((verticalY)+(dy/2.0)-(player.y));
-        textureOffsetVertical = int(verticalY+(dy/2.0)-(row*Constants::TILE_SIZE));
+        textureOffsetVertical = int(verticalY+(dy/2.0)-(row*Constants::TILE_SIZE)-Update::timer);
         return sqrt(tempDistance);
     }
 
@@ -297,8 +301,13 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     int row = int(horizontalY) / Constants::TILE_SIZE;
 
     if (row < 0 || row >= int(level.map.size()) || column < 0 || column >= int(level.map[0].size())) return 100000000.0;
+int offset = 0;
+    while (level.map[row][column] == 0 || level.map[row][column] == Constants::DOOR) {
+        if (level.map[row][column] == Constants::DOOR) {
+            offset = int(horizontalX + (dx/2.0)+0.5)%64;
+            if (offset >= Update::timer) break;
+        }
 
-    while (level.map[row][column] == 0) {
         horizontalX += dx;
         horizontalY += dy;
 
@@ -318,7 +327,7 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
         subimageOffsetHorizontalY = 6*65;
         double tempDistance = ((horizontalX)+(dx/2.0)-(player.x))*((horizontalX)+(dx/2.0)-(player.x))+
                               ((horizontalY)+(dy/2.0)-(player.y))*((horizontalY)+(dy/2.0)-(player.y));
-        textureOffsetHorizontal = int(horizontalX+(dx/2.0)-(column * Constants::TILE_SIZE));
+        textureOffsetHorizontal = int(horizontalX+(dx/2.0)-(column * Constants::TILE_SIZE)-Update::timer);
         return sqrt(tempDistance);
     }
 
@@ -373,7 +382,6 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
         level.enemies[i].angle = level.enemies[i].playerViewingAngle - level.enemies[i].angleWithOrigin;
     }
 
-
     // sort enemy list as a z-buffer
     for (uint i = 0; i < level.enemies.size()-1; i++) {
         for (uint j = i+1; j < level.enemies.size(); j++) {
@@ -385,6 +393,7 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
         }
     }
 
+    // render each enemy
     for (uint i = 0; i < level.enemies.size(); i++) {
         Enemy enemy = level.enemies[i];
 

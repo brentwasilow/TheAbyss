@@ -8,6 +8,7 @@
 namespace Update {
     extern int state;
     extern int weaponOffset;
+    extern int timer;
 
     void checkWindowState(sf::RenderWindow&);
     void checkTitleToGameState();

@@ -7,6 +7,7 @@
 
 int Update::state = 1;
 int Update::weaponOffset = 0;
+int Update::timer = 0;
 
 void Update::checkWindowState(sf::RenderWindow& window) {
     sf::Event event;
@@ -24,6 +25,14 @@ void Update::checkTitleToGameState() {
 }
 
 void Update::checkMovement(Player& player, Level& level) {
+    if (timer < 64) {
+        timer++;
+    }
+
+    if (timer == 64) {
+        timer = 0;
+    }
+
     // change viewing angle
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
         player.angle += player.angleSpeed;
