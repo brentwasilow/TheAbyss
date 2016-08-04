@@ -5,7 +5,7 @@
 #include "enemy.h"
 #include "texture.h"
 #include "constants.h"
-
+#include <iostream>
 Level::Level(const char* fileName, Player& player) {
     // load level image
     sf::Image level;
@@ -17,6 +17,9 @@ Level::Level(const char* fileName, Player& player) {
 
     // assign size of zBuffer
     zBuffer.resize(Constants::WIDTH);
+
+    // initial size of enemies list
+    enemies.resize(0);
 
     // populate map from image loaded
     for (uint y = 0; y < level.getSize().y; y++) {
@@ -42,6 +45,8 @@ Level::Level(const char* fileName, Player& player) {
 
                 enemy.sprite.setTexture(Texture::enemy1);
                 enemies.push_back(enemy);
+            } else {
+                map[y][x] = Constants::EMPTY;
             }
         }
     }

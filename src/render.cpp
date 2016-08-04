@@ -377,6 +377,8 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
 }
 
 void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level) {
+    if (level.enemies.size() == 0) return;
+
     // loop through enemy list
     for (uint i = 0; i < level.enemies.size(); i++) {
         // player angle in radians
@@ -459,7 +461,6 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
                 counter++;
             }
         }
-
     }
 }
 
