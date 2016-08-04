@@ -9,11 +9,19 @@ namespace Update {
     extern int state;
     extern int weaponOffset;
     extern double timer;
+    extern double openDoorTimer;
+    extern bool openingDoor;
+    extern bool waitingDoor;
+    extern bool closeDoor;
+
+    extern int doorRow;
+    extern int doorCol;
 
     void checkWindowState(sf::RenderWindow&);
     void checkTitleToGameState();
     void checkMovement(Player&, Level&);
     void checkWeapon(Player&);
+    void checkDoor(Player&, Level&);
 }
 
 #endif

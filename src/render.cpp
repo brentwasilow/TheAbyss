@@ -221,9 +221,11 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     if (row < 0 || row >= int(level.map.size()) || column < 0 || column >= int(level.map[0].size())) return 100000000.0;
 
     int offset = 0;
+    int block = level.map[row][column];
 
-    while (level.map[row][column] == 0 || level.map[row][column] == Constants::DOOR) {
-        if (level.map[row][column] == Constants::DOOR) {
+    while (block == Constants::EMPTY || block == Constants::DOOR ||
+           block == Constants::DOOR_TRIGGER) {
+        if (block == Constants::DOOR) {
              offset = int(verticalY + (dy/2.0) + 0.5)%64;
              if (offset >= Update::timer) break;
         }
@@ -235,19 +237,25 @@ double verticalIntersection(double angle, Player& player, Level& level) {
         row = int(verticalY) / Constants::TILE_SIZE;
 
         if (row < 0 || row >= int(level.map.size()) || column < 0 || column >= int(level.map[0].size())) return 100000000.0;
+
+        block = level.map[row][column];
     }
     textureOffsetVertical = int(verticalY)-(row * Constants::TILE_SIZE);
 
     // determine wall type
-    if (level.map[row][column] == Constants::BRICK) {
+    if (block == Constants::BRICK) {
         subimageOffsetVerticalX = 0*65;
         subimageOffsetVerticalY = 2*65;
-    } else if (level.map[row][column] == Constants::DOOR) {
+    } else if (block == Constants::DOOR) {
         subimageOffsetVerticalX = 2*65;
         subimageOffsetVerticalY = 6*65;
         double tempDistance = ((verticalX)+(dx/2.0)-(player.x))*((verticalX)+(dx/2.0)-(player.x))+
                               ((verticalY)+(dy/2.0)-(player.y))*((verticalY)+(dy/2.0)-(player.y));
-        textureOffsetVertical = int(verticalY+(dy/2.0)-(row*Constants::TILE_SIZE)-Update::timer);
+        if (row == Update::doorRow && column == Update::doorCol) {
+            textureOffsetVertical = int(verticalY+(dy/2.0)-(row*Constants::TILE_SIZE)-Update::timer);
+        } else {
+            textureOffsetVertical = int(verticalY+(dy/2.0)-(row*Constants::TILE_SIZE));
+        }
         return sqrt(tempDistance);
     }
 
@@ -306,10 +314,12 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     if (row < 0 || row >= int(level.map.size()) || column < 0 || column >= int(level.map[0].size())) return 100000000.0;
 
     int offset = 0;
+    int block = level.map[row][column];
 
-    while (level.map[row][column] == 0 || level.map[row][column] == Constants::DOOR) {
-        if (level.map[row][column] == Constants::DOOR) {
-            offset = int(horizontalX + (dx/2.0)+0.5)%64;
+    while (block == Constants::EMPTY || block == Constants::DOOR ||
+           block == Constants::DOOR_TRIGGER) {
+        if (block == Constants::DOOR) {
+            offset = int(horizontalX + (dx/2.0)+0.5) & 63;
             if (offset >= Update::timer) break;
         }
 
@@ -320,19 +330,25 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
         row = int(horizontalY) / Constants::TILE_SIZE;
 
         if (row < 0 || row >= int(level.map.size()) || column < 0 || column >= int(level.map[0].size())) return 100000000.0;
+
+        block = level.map[row][column];
     }
     textureOffsetHorizontal = int(horizontalX) - (column * Constants::TILE_SIZE);
 
     // determine wall type
-    if (level.map[row][column] == Constants::BRICK) {
+    if (block == Constants::BRICK) {
         subimageOffsetHorizontalX = 0*65;
         subimageOffsetHorizontalY = 2*65;
-    } else if (level.map[row][column] == Constants::DOOR) {
+    } else if (block == Constants::DOOR) {
         subimageOffsetHorizontalX = 2*65;
         subimageOffsetHorizontalY = 6*65;
         double tempDistance = ((horizontalX)+(dx/2.0)-(player.x))*((horizontalX)+(dx/2.0)-(player.x))+
                               ((horizontalY)+(dy/2.0)-(player.y))*((horizontalY)+(dy/2.0)-(player.y));
-        textureOffsetHorizontal = int(horizontalX+(dx/2.0)-(column * Constants::TILE_SIZE)-Update::timer);
+        if (row == Update::doorRow && column == Update::doorCol) {
+            textureOffsetHorizontal = int(horizontalX+(dx/2.0)-(column * Constants::TILE_SIZE)-Update::timer);
+        } else {
+            textureOffsetHorizontal = int(horizontalX+(dx/2.0)-(column*Constants::TILE_SIZE));
+        }
         return sqrt(tempDistance);
     }
 

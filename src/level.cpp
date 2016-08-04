@@ -33,6 +33,8 @@ Level::Level(const char* fileName, Player& player) {
                 player.x = (x * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
                 player.y = (y * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
                 map[y][x] = Constants::EMPTY;
+            } else if (color == sf::Color::Magenta) {
+                map[y][x] = Constants::DOOR_TRIGGER;
             } else if (color == sf::Color::Yellow) {
                 Enemy enemy;
                 enemy.x = (x * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;

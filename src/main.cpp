@@ -50,6 +50,7 @@ void update(sf::RenderWindow& window, Player& player, Level& level) {
         case 1:
             Update::checkMovement(player, level);
             Update::checkWeapon(player);
+            Update::checkDoor(player, level);
             break;
     }
 }

@@ -33,6 +33,9 @@ namespace Constants {
     const int BRICK = 1;
     const int DOOR = 2;
     const int PLAYER = 3;
+    const int DOOR_TRIGGER = 4;
+
+    const double DOOR_OPEN_TIME = 300.0;
 
     const std::string DELIM = ":=";
 

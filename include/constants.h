@@ -33,6 +33,9 @@ namespace Constants {
     extern const int BRICK;
     extern const int DOOR;
     extern const int PLAYER;
+    extern const int DOOR_TRIGGER;
+
+    extern const double DOOR_OPEN_TIME;
 
     extern const std::string DELIM;
 
