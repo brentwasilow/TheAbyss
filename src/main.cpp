@@ -6,7 +6,6 @@
 #include "level.h"
 #include "texture.h"
 #include <iostream>
-#include <ctime>
 
 void update(sf::RenderWindow&, Player&, Level&);
 void render(sf::RenderWindow&, Player&, Level&);
@@ -30,7 +29,6 @@ int main(int argc, char* argv[]) {
 
         while (clock.getElapsedTime().asMilliseconds() > nextGameTick && loops < Constants::MAX_FRAMESKIP) {
             update(window, player, level);
-
             nextGameTick += Constants::SKIP_TICKS;
             loops++;
         }

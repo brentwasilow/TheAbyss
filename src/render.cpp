@@ -119,6 +119,10 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             wallBottom = Constants::HEIGHT;
         }
 
+        /****************
+          Wall Rendering
+        *****************/
+
         int index = (wallTop * Constants::WIDTH + x) * 4;
         int indexAdd = (Constants::WIDTH * 4);
         for (int y = wallTop; y <= wallBottom; y++) {
@@ -133,6 +137,10 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             wallCounter++;
             index += indexAdd;
         }
+
+        /*****************
+          Floor Rendering
+        ******************/
 
         double correction = 1.0/cos(ang);
         double xComponent = cos(angle*M_PI/180);
@@ -163,6 +171,10 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
             pixels[floorIndex + 2] = color.b;
             pixels[floorIndex + 3] = color.a;
         }
+
+        /*******************
+          Ceiling Rendering
+        ********************/
 
         denom = int(ceil(projectedSliceHeight)/2);
         for (int y = wallTop-1; y >= 0; y--) {
@@ -438,10 +450,11 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
         double divisor = (double) (endTexture - startTexture) / enemy.sprite.getTexture()->getSize().x;
 
         double counter = 0;
-        if (startTexture < 0) counter = abs(startTexture);
+        //if (startTexture < 0) counter = abs(startTexture);
 
-        for (int i = 0; i < Constants::WIDTH; i++) {
-            if (i >= startTexture && i <= endTexture) {
+//        for (int i = 0; i < Constants::WIDTH; i++) {
+//            if (i >= startTexture && i <= endTexture) {
+          for (int i = startTexture; i <= endTexture; i++) {
                 if (enemy.distance < level.zBuffer[i]) {
                     int sub = (int) (counter / (divisor + 0.01f));
 
@@ -459,7 +472,7 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
                     window.draw(enemy.sprite);
                 }
                 counter++;
-            }
+//            }
         }
     }
 }

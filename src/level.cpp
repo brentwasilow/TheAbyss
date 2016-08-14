@@ -18,7 +18,7 @@ Level::Level(const char* fileName, Player& player) {
     // assign size of zBuffer
     zBuffer.resize(Constants::WIDTH);
 
-    // initial size of enemies list
+    // initialize size of enemies list
     enemies.resize(0);
 
     // populate map from image loaded
