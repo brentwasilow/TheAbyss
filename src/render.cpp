@@ -1,5 +1,7 @@
 #include "render.h"
 #include "constants.h"
+#include "enemy.h"
+#include "wall.h"
 #include <cmath>
 #include <iostream>
 #include <stdio.h>
@@ -61,7 +63,7 @@ void Render::setup(sf::RenderWindow& window) {
     pixelBufferSprite.setTexture(pixelBufferTexture);
 }
 
-void Render::drawTitleScreen(sf::RenderWindow& window) {
+void Render::drawIntroScreen(sf::RenderWindow& window) {
     window.draw(Texture::titleText);
 }
 
@@ -108,13 +110,13 @@ void Render::drawMap(sf::RenderWindow& window, Player& player, Level& level) {
         level.zBuffer[x] = distance;
 
         int wallCounter = 0;
-        int wallTop = (Constants::HEIGHT_2-player.offset) - int(ceil(projectedSliceHeight)/2);
+        int wallTop = (Constants::HEIGHT_2) - int(ceil(projectedSliceHeight)/2);
         if (wallTop < 0) {
             wallCounter += -wallTop;
             wallTop = 0;
         }
 
-        int wallBottom = (Constants::HEIGHT_2-player.offset) + int(ceil(projectedSliceHeight)/2);
+        int wallBottom = (Constants::HEIGHT_2) + int(ceil(projectedSliceHeight)/2);
         if (wallBottom > Constants::HEIGHT) {
             wallBottom = Constants::HEIGHT;
         }
@@ -235,9 +237,9 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     int offset = 0;
     int block = level.map[row][column];
 
-    while (block == Constants::EMPTY || block == Constants::DOOR ||
-           block == Constants::DOOR_TRIGGER) {
-        if (block == Constants::DOOR) {
+    while (block == Wall::EMPTY || block == Wall::DOOR ||
+           block == Wall::DOOR_TRIGGER) {
+        if (block == Wall::DOOR) {
              if (row == Update::doorRow && column == Update::doorCol) {
                  offset = int(verticalY + (dy/2.0) + 0.5)%64;
                  if (offset >= Update::timer) break;
@@ -259,10 +261,10 @@ double verticalIntersection(double angle, Player& player, Level& level) {
     textureOffsetVertical = int(verticalY)-(row * Constants::TILE_SIZE);
 
     // determine wall type
-    if (block == Constants::BRICK) {
+    if (block == Wall::RED_BRICK) {
         subimageOffsetVerticalX = 0*65;
         subimageOffsetVerticalY = 2*65;
-    } else if (block == Constants::DOOR) {
+    } else if (block == Wall::DOOR) {
         subimageOffsetVerticalX = 2*65;
         subimageOffsetVerticalY = 6*65;
         double tempDistance = ((verticalX)+(dx/2.0)-(player.x))*((verticalX)+(dx/2.0)-(player.x))+
@@ -277,11 +279,11 @@ double verticalIntersection(double angle, Player& player, Level& level) {
 
     // check if wall is next to a door so we can render the adjoining door wall correctly
     // also perform short circuit evaluation to ensure that array index is not out of bounds
-    if (column+1 < int(level.map[row].size()) && level.map[row][column+1] == Constants::DOOR) {
+    if (column+1 < int(level.map[row].size()) && level.map[row][column+1] == Wall::DOOR) {
         subimageOffsetVerticalX = 5*65;
         subimageOffsetVerticalY = 6*65;
     }
-    if (column-1 >= 0 && level.map[row][column-1] == Constants::DOOR) {
+    if (column-1 >= 0 && level.map[row][column-1] == Wall::DOOR) {
         subimageOffsetVerticalX = 5*65;
         subimageOffsetVerticalY = 6*65;
     }
@@ -332,9 +334,9 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     int offset = 0;
     int block = level.map[row][column];
 
-    while (block == Constants::EMPTY || block == Constants::DOOR ||
-           block == Constants::DOOR_TRIGGER) {
-        if (block == Constants::DOOR) {
+    while (block == Wall::EMPTY || block == Wall::DOOR ||
+           block == Wall::DOOR_TRIGGER) {
+        if (block == Wall::DOOR) {
             if (row == Update::doorRow && column == Update::doorCol) {
                 offset = int(horizontalX + (dx/2.0)+0.5) & 63;
                 if (offset >= Update::timer) break;
@@ -356,10 +358,10 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     textureOffsetHorizontal = int(horizontalX) - (column * Constants::TILE_SIZE);
 
     // determine wall type
-    if (block == Constants::BRICK) {
+    if (block == Wall::RED_BRICK) {
         subimageOffsetHorizontalX = 0*65;
         subimageOffsetHorizontalY = 2*65;
-    } else if (block == Constants::DOOR) {
+    } else if (block == Wall::DOOR) {
         subimageOffsetHorizontalX = 2*65;
         subimageOffsetHorizontalY = 6*65;
         double tempDistance = ((horizontalX)+(dx/2.0)-(player.x))*((horizontalX)+(dx/2.0)-(player.x))+
@@ -374,11 +376,11 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
 
     // check if wall is next to a door so we can render the adjoining door wall correctly
     // also perform short circuit evaluation to ensure that array index is not out of bounds
-    if (row+1 < int(level.map.size()) && level.map[row+1][column] == Constants::DOOR) {
+    if (row+1 < int(level.map.size()) && level.map[row+1][column] == Wall::DOOR) {
         subimageOffsetHorizontalX = 5 * 65;
         subimageOffsetHorizontalY = 6 * 65;
     }
-    if (row-1 >= 0 && level.map[row-1][column] == Constants::DOOR) {
+    if (row-1 >= 0 && level.map[row-1][column] == Wall::DOOR) {
         subimageOffsetHorizontalX = 5*65;
         subimageOffsetHorizontalY = 6*65;
     }
@@ -388,12 +390,13 @@ double horizontalIntersection(double angle, Player& player, Level& level) {
     return sqrt(tempDistance);
 }
 
-void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level) {
-    if (level.enemies.size() == 0) return;
+void Render::drawSprites(sf::RenderWindow& window, Player& player, Level& level) {
+    if (level.sprites.size() == 0) return;
 
     // loop through enemy list
-    for (uint i = 0; i < level.enemies.size(); i++) {
+    for (uint i = 0; i < level.sprites.size(); i++) {
         //if (level.enemies[i].type == 'f') return;
+        Sprite* sprite = level.sprites[i];
 
         // player angle in radians
         double playerAngleRadians = (player.angle * M_PI / 180.0);
@@ -403,109 +406,108 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
         double vy = sin(playerAngleRadians);
 
         // get change in x/y from enemy to player
-        double dx = level.enemies[i].x - player.x;
-        double dy = player.y - level.enemies[i].y;
+        double dx = sprite->x - player.x;
+        double dy = player.y - sprite->y;
 
         // get straight line distance from enemy to player
-        level.enemies[i].distance = hypot(dx, dy);
+        sprite->distance = hypot(dx, dy);
 
         // find angle difference between enemy and player
-        double dPrimeX = dx / level.enemies[i].distance;
-        level.enemies[i].angleWithOrigin = acos(dPrimeX) * 180.0 / M_PI;
+        double dPrimeX = dx / sprite->distance;
+        sprite->angleWithOrigin = acos(dPrimeX) * 180.0 / M_PI;
 
         // enemy is in front of player so change angle to III and IV quadrant
-        if (dy < 0) level.enemies[i].angleWithOrigin = 360 - level.enemies[i].angleWithOrigin;
+        if (dy < 0) sprite->angleWithOrigin = 360 - sprite->angleWithOrigin;
 
-        level.enemies[i].playerViewingAngle = player.angle;
+        sprite->playerViewingAngle = player.angle;
 
         // get angle difference between enemy and player factoring in position in cartesian quadrants
         if ((dy < 0 && dx > 0) && (vx > 0 && vy >= 0)) {
-            level.enemies[i].playerViewingAngle = player.angle + 360;
+            sprite->playerViewingAngle = player.angle + 360;
         } else if ((dy > 0 && dx > 0) && (vx > 0 && vy < 0)) {
-            level.enemies[i].angleWithOrigin += 360;
+            sprite->angleWithOrigin += 360;
         }
-        level.enemies[i].angle = level.enemies[i].playerViewingAngle - level.enemies[i].angleWithOrigin;
+        sprite->angle = sprite->playerViewingAngle - sprite->angleWithOrigin;
     }
 
     // sort enemy list as a z-buffer
-    for (uint i = 0; i < level.enemies.size()-1; i++) {
-        for (uint j = i+1; j < level.enemies.size(); j++) {
-            if (level.enemies[i].distance < level.enemies[j].distance) {
-                Enemy temp = level.enemies[i];
-                level.enemies[i] = level.enemies[j];
-                level.enemies[j] = temp;
+    for (uint i = 0; i < level.sprites.size()-1; i++) {
+        for (uint j = i+1; j < level.sprites.size(); j++) {
+            if (level.sprites[i]->distance < level.sprites[j]->distance) {
+                Sprite* temp = level.sprites[i];
+                level.sprites[i] = level.sprites[j];
+                level.sprites[j] = temp;
             }
         }
     }
 
-    // render each enemy
-    for (uint i = 0; i < level.enemies.size(); i++) {
-        Enemy enemy = level.enemies[i];
+    // render each sprite
+    for (uint i = 0; i < level.sprites.size(); i++) {
+        if (level.sprites[i]->type == 'w') {
+            Enemy* enemy = static_cast<Enemy*>(level.sprites[i]);
 
-        if (enemy.type == 'e') {
-        if (enemy.moving) {
-            if (enemy.movingAnimation % 30 < 15) {
-                enemy.xOffset = 0;
-                enemy.yOffset = 256;
-                enemy.texSize = 64;
-            } else if (enemy.movingAnimation % 30 < 30) {
-                enemy.xOffset = 64;
-                enemy.yOffset = 256;
-                enemy.texSize = 64;
+            if (enemy->moving) {
+                if (enemy->movingAnimation % 30 < 15) {
+                    enemy->xOffset = 0;
+                    enemy->yOffset = 256;
+                    enemy->texSize = 64;
+                } else if (enemy->movingAnimation % 30 < 30) {
+                    enemy->xOffset = 64;
+                    enemy->yOffset = 256;
+                    enemy->texSize = 64;
+                }
+            }
+
+            if (enemy->attacking) {
+                if (enemy->attackingAnimation % 30 < 15) {
+                    enemy->xOffset = 128;
+                    enemy->yOffset = 256;
+                    enemy->texSize = 128;
+                } else if (enemy->attackingAnimation % 30 < 30) {
+                    enemy->xOffset = 0;
+                    enemy->yOffset = 320;
+                    enemy->texSize = 128;
+                }
+            }
+
+            if (!enemy->alive) {
+                if (enemy->dyingAnimation % 60 < 15) {
+                    enemy->xOffset = 249;
+                    enemy->yOffset = 253;
+                    enemy->texSize = 128;
+                } else if (enemy->dyingAnimation % 60 < 30) {
+                    enemy->xOffset = 366;
+                    enemy->yOffset = 257;
+                    enemy->texSize = 128;
+                } else if (enemy->dyingAnimation % 60 < 45) {
+                    enemy->xOffset = 291;
+                    enemy->yOffset = 377;
+                    enemy->texSize = 128;
+                } else if (enemy->dyingAnimation % 60 < 60) {
+                    enemy->xOffset = 359;
+                    enemy->yOffset = 40;
+                    enemy->texSize = 128;
+                }
             }
         }
-
-        if (enemy.attacking) {
-            if (enemy.attackingAnimation % 30 < 15) {
-                enemy.xOffset = 128;
-                enemy.yOffset = 256;
-                enemy.texSize = 128;
-            } else if (enemy.attackingAnimation % 30 < 30) {
-                enemy.xOffset = 0;
-                enemy.yOffset = 320;
-                enemy.texSize = 128;
-            }
+/*
+        if (level.sprites[i]->type == 'f') {
+            enemy->xOffset = 256;
+            enemy->yOffset = 0;
+            enemy->texSize = 64;
         }
+*/
+        Sprite* sprite = level.sprites[i];
 
-        if (!enemy.alive) {
-            if (enemy.dyingAnimation % 60 < 15) {
-                enemy.xOffset = 249;
-                enemy.yOffset = 253;
-                enemy.texSize = 128;
-            } else if (enemy.dyingAnimation % 60 < 30) {
-                enemy.xOffset = 366;
-                enemy.yOffset = 257;
-                enemy.texSize = 128;
-            } else if (enemy.dyingAnimation % 60 < 45) {
-                enemy.xOffset = 291;
-                enemy.yOffset = 377;
-                enemy.texSize = 128;
-            } else if (enemy.dyingAnimation % 60 < 60) {
-                enemy.xOffset = 359;
-                enemy.yOffset = 40;
-                enemy.texSize = 128;
-            }
-        }
-        }
-
-        if (enemy.type == 'f') {
-            //enemy.x -= cos(enemy.angle*M_PI/180.0);
-            //enemy.y += sin(enemy.angle*M_PI/180.0);
-            enemy.xOffset = 256;
-            enemy.yOffset = 0;
-            enemy.texSize = 64;
-        }
-
-        //double heightAndWidth = ((Constants::DISTANCE_TO_PROJECTION*enemy.sprite.getTexture()->getSize().x)/enemy.distance);
-        double heightAndWidth = ((Constants::DISTANCE_TO_PROJECTION*enemy.texSize)/enemy.distance);
+        double heightAndWidth = ((Constants::DISTANCE_TO_PROJECTION*sprite->texSize)/sprite->distance);
 
         double projectedSliceHeight = heightAndWidth;
         double projectedSliceWidth = heightAndWidth;
 
-        int startTexture = (int) ((Constants::WIDTH_2) - (projectedSliceWidth/2)-(enemy.angle*Constants::WIDTH/Constants::FOV_D));
+        int startTexture = (int) ((Constants::WIDTH_2) - (projectedSliceWidth/2)-(sprite->angle*Constants::WIDTH/Constants::FOV_D));
         int endTexture = startTexture + (int) (projectedSliceWidth);
         //double divisor = (double) (endTexture - startTexture) / enemy.sprite.getTexture()->getSize().x;
-        double divisor = (double) (endTexture-startTexture) / enemy.texSize;
+        double divisor = (double) (endTexture-startTexture) / sprite->texSize;
 
         double counter = 0;
         if (startTexture < 0) counter = abs(startTexture);
@@ -513,24 +515,24 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
         for (int j = 0; j < Constants::WIDTH; j++) {
             if (j >= startTexture && j <= endTexture) {
 //          for (int i = startTexture; i <= endTexture; i++) {
-                if (enemy.distance < level.zBuffer[j]) {
+                if (sprite->distance < level.zBuffer[j]) {
                     int sub = (int) (counter / (divisor + 0.01f));
 
                     //std::cout << sub << std::endl;
 
-                    double val = enemy.distance / fogValue;
+                    double val = sprite->distance / fogValue;
                     if (val > 1.0) val = 1.0;
                     val *= 255;
                     int v = 255-val;
                     sf::Color color(v, v, v);
-                    enemy.sprite.setColor(color);
+                    sprite->sprite.setColor(color);
 
-                    enemy.sprite.setTextureRect(sf::IntRect(sub+enemy.xOffset, enemy.yOffset, 1, enemy.texSize));
+                    sprite->sprite.setTextureRect(sf::IntRect(sub+sprite->xOffset, sprite->yOffset, 1, sprite->texSize));
                     sf::Vector2f targetSize(1.0f, projectedSliceHeight);
-                    enemy.sprite.setScale(targetSize.x/enemy.sprite.getLocalBounds().width, targetSize.y/enemy.sprite.getLocalBounds().height);
+                    sprite->sprite.setScale(targetSize.x/sprite->sprite.getLocalBounds().width, targetSize.y/sprite->sprite.getLocalBounds().height);
                     //enemy.sprite.setScale(targetSize.x/enemy.texSize, targetSize.y/enemy.texSize);
-                    enemy.sprite.setPosition(j, (Constants::HEIGHT_2)-(projectedSliceHeight/2.0));
-                    window.draw(enemy.sprite);
+                    sprite->sprite.setPosition(j, (Constants::HEIGHT_2)-(projectedSliceHeight/2.0));
+                    window.draw(sprite->sprite);
                 }
                 counter++;
             }

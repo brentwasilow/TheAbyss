@@ -18,12 +18,12 @@ namespace Update {
     extern int doorCol;
 
     void checkWindowState(sf::RenderWindow&);
-    void checkTitleToGameState();
+    void checkIntroState();
     void checkMovement(Player&, Level&);
     void checkWeapon(Player&, Level&);
     void checkDoor(Player&, Level&);
     void checkEnemies(Player&, Level&);
-    void moveFireball(Player&, Level&);
+    void moveSprite(Player&, Level&);
     void checkPlayer(Player&);
 }
 

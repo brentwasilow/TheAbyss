@@ -8,11 +8,12 @@
 Player::Player(const char* fileName) {
     // assign starting values to variables
     this->health = 100.0;
-    this->xp = 0.0;
     this->attack = 1.0;
     this->attacking = false;
+
+    this->xp = 0.0;
+
     this->height = 32.0;
-    this->offset = 0;
 
     std::string line;
 
@@ -40,4 +41,9 @@ Player::Player(const char* fileName) {
         exit(EXIT_FAILURE);
     }
     file.close();
+}
+
+void Player::setPosition(int x, int y) {
+    this->x = (x * Constants::TILE_SIZE) + (Constants::TILE_SIZE_2);
+    this->y = (y * Constants::TILE_SIZE) + (Constants::TILE_SIZE_2);
 }

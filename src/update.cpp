@@ -1,7 +1,11 @@
 #include "update.h"
 #include "constants.h"
 #include <cmath>
+#include "wall.h"
 #include "texture.h"
+#include "weapon.h"
+#include "enemy.h"
+#include "sprite.h"
 #include <iostream>
 #define _USE_MATH_DEFINES
 
@@ -24,7 +28,7 @@ void Update::checkWindowState(sf::RenderWindow& window) {
     }
 }
 
-void Update::checkTitleToGameState() {
+void Update::checkIntroState() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
         state = 1;
     }
@@ -35,17 +39,17 @@ void Update::checkDoor(Player& player, Level& level) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !openingDoor && !waitingDoor && !closeDoor) {
         int row = int(player.y)/Constants::TILE_SIZE;
         int col = int(player.x)/Constants::TILE_SIZE;
-        if (level.map[row][col] == Constants::DOOR_TRIGGER) {
-            if (row+1 < int(level.map.size()) && level.map[row+1][col] == Constants::DOOR) {
+        if (level.map[row][col] == Wall::DOOR_TRIGGER) {
+            if (row+1 < int(level.map.size()) && level.map[row+1][col] == Wall::DOOR) {
                 doorRow = row+1;
                 doorCol = col;
-            } else if (row-1 >= 0 && level.map[row-1][col] == Constants::DOOR) {
+            } else if (row-1 >= 0 && level.map[row-1][col] == Wall::DOOR) {
                 doorRow = row-1;
                 doorCol = col;
-            } else if (col-1 >= 0 && level.map[row][col-1] == Constants::DOOR) {
+            } else if (col-1 >= 0 && level.map[row][col-1] == Wall::DOOR) {
                 doorRow = row;
                 doorCol = col-1;
-            } else if (col+1 < int(level.map[row].size()) && level.map[row][col+1] == Constants::DOOR) {
+            } else if (col+1 < int(level.map[row].size()) && level.map[row][col+1] == Wall::DOOR) {
                 doorRow = row;
                 doorCol = col+1;
             }
@@ -107,8 +111,8 @@ void Update::checkMovement(Player& player, Level& level) {
         int col = int(player.x)/Constants::TILE_SIZE;
         int block = level.map[row][col];
 
-        if (block != Constants::EMPTY && block != Constants::DOOR_TRIGGER) {
-            if (block == Constants::DOOR && row == doorRow && col == doorCol && waitingDoor) return;
+        if (block != Wall::EMPTY && block != Wall::DOOR_TRIGGER) {
+            if (block == Wall::DOOR && row == doorRow && col == doorCol && waitingDoor) return;
             player.x = tempX;
             player.y = tempY;
         }
@@ -120,17 +124,11 @@ void Update::checkMovement(Player& player, Level& level) {
         int col = int(player.x)/Constants::TILE_SIZE;
         int block = level.map[row][col];
 
-        if (block != Constants::EMPTY && block != Constants::DOOR_TRIGGER) {
-            if (block == Constants::DOOR && row == doorRow && col == doorCol && waitingDoor) return;
+        if (block != Wall::EMPTY && block != Wall::DOOR_TRIGGER) {
+            if (block == Wall::DOOR && row == doorRow && col == doorCol && waitingDoor) return;
             player.x = tempX;
             player.y = tempY;
         }
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
-        player.offset = 128;
-    } else {
-        player.offset = 0;
     }
 }
 
@@ -140,27 +138,12 @@ void Update::checkWeapon(Player& player, Level& level) {
         player.attacking = true;
         weaponOffset = 0;
 
-        Enemy enemy;
-        enemy.x = int(player.x);
-        enemy.y = int(player.y);
-        enemy.distance = 32;
-        enemy.angleWithOrigin = player.angle;
-        enemy.playerViewingAngle = player.angle;
-        enemy.angle = player.angle;
-        enemy.fangle = player.angle;
-        enemy.moving = false;
-        enemy.alive = true;
-        enemy.attacking = false;
-        enemy.health = 100;
-        enemy.movingAnimation = 0;
-        enemy.attackingAnimation = 0;
-        enemy.dyingAnimation = 0;
-        enemy.xOffset = 256;
-        enemy.yOffset = 0;
-        enemy.texSize = 64;
-        enemy.type = 'f';
-        enemy.sprite.setTexture(Texture::sprites);
-        level.enemies.push_back(enemy);
+        Weapon* fireball = new Weapon();
+        fireball->setType('f');
+        fireball->setPosition(int(player.x), int(player.y));
+        fireball->setAngle(player.angle);
+
+        level.sprites.push_back(fireball);
     }
 
     // while player is attacking lower rendering offset
@@ -178,28 +161,30 @@ void Update::checkWeapon(Player& player, Level& level) {
     }
 }
 
-void Update::moveFireball(Player& player, Level& level) {
-    for (uint i = 0; i < level.enemies.size(); i++) {
-        Enemy enemy = level.enemies[i];
-        if (enemy.type == 'f') {
-            double angle = level.enemies[i].fangle;
-            //std::cout << level.enemies[i].angle << std::endl;
-            //if (angle >= 360.0) angle -= 360.0;
-            //if (angle < 0.0) angle += 360.0;
-            level.enemies[i].x += 12*cos(angle*M_PI/180.0);
-            level.enemies[i].y -= 12*sin(angle*M_PI/180.0);
+void Update::moveSprite(Player& player, Level& level) {
+    for (uint i = 0; i < level.sprites.size(); i++) {
+        if (level.sprites[i]->type == 'f') {
+            Weapon* sprite = static_cast<Weapon*>(level.sprites[i]);
 
-            int block = level.map[int(level.enemies[i].y)/Constants::TILE_SIZE][int(level.enemies[i].x)/Constants::TILE_SIZE];
-            if (block == !(Constants::EMPTY && Constants::DOOR)) {
-                level.enemies.erase(level.enemies.begin()+i);
+            sprite->x += 12 * cos(sprite->weaponAngle * M_PI / 180.0);
+            sprite->y -= 12 * sin(sprite->weaponAngle * M_PI / 180.0);
+
+            int block = level.map[int(sprite->y)/Constants::TILE_SIZE][int(sprite->x)/Constants::TILE_SIZE];
+            if (block == !(Wall::EMPTY && Wall::DOOR)) {
+                delete sprite;
+                level.sprites.erase(level.sprites.begin()+i);
             }
 
-            for (uint j = 0; j < level.enemies.size(); j++) {
-                if (int(level.enemies[j].x)/64 == int(level.enemies[i].x)/64 && int(level.enemies[j].y)/64 == int(level.enemies[i].y)/64 && level.enemies[j].type == 'e') {
-                    if (!level.enemies[j].alive) {
-                    } else {
-                        level.enemies[j].health -= 25;
-                        level.enemies.erase(level.enemies.begin()+i);
+            for (uint j = 0; j < level.sprites.size(); j++) {
+                if (level.sprites[j]->type == 'w') {
+                     Enemy* enemy = static_cast<Enemy*>(level.sprites[j]);
+                     if (int(enemy->x)/Constants::TILE_SIZE == int(sprite->x)/Constants::TILE_SIZE && int(enemy->y)/Constants::TILE_SIZE == int(sprite->y)/Constants::TILE_SIZE) {
+                        if (!enemy->alive) {
+                        } else {
+                            enemy->health -= 25;
+                            delete sprite;
+                            level.sprites.erase(level.sprites.begin()+i);
+                        }
                     }
                 }
             }
@@ -208,58 +193,52 @@ void Update::moveFireball(Player& player, Level& level) {
 }
 
 void Update::checkEnemies(Player& player, Level& level) {
-    for (uint i = 0; i < level.enemies.size(); i++) {
-        Enemy enemy = level.enemies[i];
-        if (enemy.type == 'f') {
-        } else if (enemy.type == 'e') {
-            // remove enemy from list if dead
-            if (enemy.health <= 0) {
-                enemy.alive = false;
-                enemy.moving = false;
-                enemy.attacking = false;
-                if (enemy.dyingAnimation < 59) {
-                    enemy.dyingAnimation++;
+    for (uint i = 0; i < level.sprites.size(); i++) {
+        if (level.sprites[i]->type == 'f') {
+            // do nothing
+        } else if (level.sprites[i]->type == 'w') {
+            Enemy* sprite = static_cast<Enemy*>(level.sprites[i]);
+            // mark as dead
+            if (sprite->health <= 0) {
+                sprite->alive = false;
+                sprite->moving = false;
+                sprite->attacking = false;
+                if (sprite->dyingAnimation < 59) {
+                    sprite->dyingAnimation++;
                 }
-                level.enemies[i] = enemy;
             } else {
+                // spotted player so start moving
+                if (sprite->distance < 256 && sprite->distance > 96) {
+                    sprite->moving = true;
+                    sprite->attacking = false;
+                }
 
-            // spotted player so start moving
-            if (enemy.distance < 256 && enemy.distance > 96) {
-                enemy.moving = true;
-                enemy.attacking = false;
+                // move toward player to close distance
+                if (sprite->moving) {
+                    double x = sprite->x - player.x;
+                    double y = player.y - sprite->y;
+
+                    x = x/sprite->distance;
+                    y = y/sprite->distance;
+
+                    sprite->x -= 2*x;
+                    sprite->y += 2*y;
+                }
+
+                // close enough so start attacking
+                if (sprite->distance <= 96) {
+                    sprite->attacking = true;
+                    sprite->moving = false;
+                }
+
+                if (sprite->moving) {
+                    sprite->movingAnimation++;
+                }
+
+                if (sprite->attacking) {
+                    sprite->attackingAnimation++;
+                }
             }
-
-            // move toward player to close distance
-            if (enemy.moving) {
-                double x = enemy.x - player.x;
-                double y = player.y - enemy.y;
-
-                x = x/enemy.distance;
-                y = y/enemy.distance;
-
-                enemy.x -= 2*x;
-                enemy.y += 2*y;
-            }
-
-            // close enough so start attacking
-            if (enemy.distance <= 96) {
-                enemy.attacking = true;
-                enemy.moving = false;
-            }
-
-            if (enemy.moving) {
-                enemy.movingAnimation++;
-            }
-
-            if (enemy.attacking) {
-                enemy.attackingAnimation++;
-
-                //if (player.health > 0) {
-                //    player.health -= 0.5;
-                //}
-            }
-            level.enemies[i] = enemy;
-        }
         }
     }
 }

@@ -3,8 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <stdlib.h>
 #include "enemy.h"
-#include "texture.h"
 #include "constants.h"
+#include "texture.h"
+#include "wall.h"
 #include <iostream>
 Level::Level(const char* fileName, Player& player) {
     // load level image
@@ -12,14 +13,14 @@ Level::Level(const char* fileName, Player& player) {
     if (!level.loadFromFile(fileName)) {
         exit(EXIT_FAILURE);
     }
-    // create 2D array
+    // create 2D array of map
     map.resize(level.getSize().y, std::vector<int>(level.getSize().x, 0));
 
     // assign size of zBuffer
     zBuffer.resize(Constants::WIDTH);
 
     // initialize size of enemies list
-    enemies.resize(0);
+    sprites.resize(0);
 
     // populate map from image loaded
     for (uint y = 0; y < level.getSize().y; y++) {
@@ -27,38 +28,32 @@ Level::Level(const char* fileName, Player& player) {
             sf::Color color = level.getPixel(x, y);
 
             if (color == sf::Color::White) {
-                map[y][x] = Constants::EMPTY;
+                map[y][x] = Wall::EMPTY;
             } else if (color == sf::Color::Black) {
-                map[y][x] = Constants::BRICK;
+                map[y][x] = Wall::RED_BRICK;
             } else if (color == sf::Color::Blue) {
-                map[y][x] = Constants::DOOR;
-            } else if (color == sf::Color::Red) {
-                player.x = (x * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
-                player.y = (y * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
-                map[y][x] = Constants::EMPTY;
+                map[y][x] = Wall::DOOR;
             } else if (color == sf::Color::Magenta) {
-                map[y][x] = Constants::DOOR_TRIGGER;
+                map[y][x] = Wall::DOOR_TRIGGER;
+            } else if (color == sf::Color::Red) {
+                // set player position in the center of the tile and make block empty
+                player.setPosition(x, y);
+                map[y][x] = Wall::EMPTY;
             } else if (color == sf::Color::Yellow) {
-                Enemy enemy;
-                enemy.x = (x * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
-                enemy.y = (y * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
-                enemy.moving = false;
-                enemy.alive = true;
-                enemy.fangle = 0;
-                enemy.attacking = false;
-                enemy.health = 100;
-                enemy.movingAnimation = 0;
-                enemy.attackingAnimation = 0;
-                enemy.dyingAnimation = 0;
-                enemy.xOffset = 0;
-                enemy.yOffset = 256;
-                enemy.texSize = 64;
-                enemy.type = 'e';
+                // create wizard and add to sprite list
+                Enemy* wizard = new Enemy();
 
-                enemy.sprite.setTexture(Texture::sprites);
-                enemies.push_back(enemy);
-            } else {
-                map[y][x] = Constants::EMPTY;
+                wizard->setType('w');
+                wizard->setPosition(x, y);
+
+                sprites.push_back(wizard);
+
+                // set wizard position in the center of the tile
+                //wizard.x = (x * Constants::TILE_SIZE) + (Constants::TILE_SIZE/2);
+                //wizard.y = (y * Constants::TILE_SIZE) + (Constants::TILE_SIZE/2);
+
+                // need to remove
+                //wizard.fangle = 0;
             }
         }
     }

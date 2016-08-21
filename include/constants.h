@@ -23,17 +23,12 @@ namespace Constants {
     extern const int DISTANCE_TO_PROJECTION;
     extern const double ANGLE_BETWEEN_RAYS;
     extern const int TILE_SIZE;
+    extern const int TILE_SIZE_2;
     extern const int DISTANCE_TO_PROJECTION_TILE_SIZE;
 
     extern const int TICKS_PER_SECOND;
     extern const int SKIP_TICKS;
     extern const int MAX_FRAMESKIP;
-
-    extern const int EMPTY;
-    extern const int BRICK;
-    extern const int DOOR;
-    extern const int PLAYER;
-    extern const int DOOR_TRIGGER;
 
     extern const double DOOR_OPEN_TIME;
 

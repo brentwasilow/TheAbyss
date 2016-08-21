@@ -29,7 +29,6 @@ int main(int argc, char* argv[]) {
 
         while (clock.getElapsedTime().asMilliseconds() > nextGameTick && loops < Constants::MAX_FRAMESKIP) {
             update(window, player, level);
-        //    render(window, player, level);
             nextGameTick += Constants::SKIP_TICKS;
             loops++;
         }
@@ -44,7 +43,7 @@ void update(sf::RenderWindow& window, Player& player, Level& level) {
 
     switch(Update::state) {
         case 0:
-            Update::checkTitleToGameState();
+            Update::checkIntroState();
             break;
         case 1:
             Update::checkMovement(player, level);
@@ -52,7 +51,7 @@ void update(sf::RenderWindow& window, Player& player, Level& level) {
             Update::checkDoor(player, level);
             Update::checkPlayer(player);
             Update::checkEnemies(player, level);
-            Update::moveFireball(player, level);
+            Update::moveSprite(player, level);
             break;
         case 2:
             window.close();
@@ -65,11 +64,11 @@ void render(sf::RenderWindow& window, Player& player, Level& level) {
 
     switch(Update::state) {
         case 0:
-            Render::drawTitleScreen(window);
+            Render::drawIntroScreen(window);
             break;
         case 1:
             Render::drawMap(window, player, level);
-            Render::drawEnemies(window, player, level);
+            Render::drawSprites(window, player, level);
             Render::drawWeapon(window, player);
             break;
     }

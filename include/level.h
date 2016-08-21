@@ -3,12 +3,12 @@
 
 #include <vector>
 #include "player.h"
-#include "enemy.h"
+#include "sprite.h"
 
 class Level {
     public:
         std::vector< std::vector<int> > map;
-        std::vector<Enemy> enemies;
+        std::vector<Sprite*> sprites;
         std::vector<double> zBuffer;
 
         Level(const char*, Player&);

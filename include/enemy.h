@@ -1,30 +1,36 @@
 #ifndef __ENEMY_H_INCLUDED__
 #define __ENEMY_H_INCLUDED__
 
-#include <SFML/Graphics.hpp>
+#include "sprite.h"
 
-class Enemy {
+class Enemy: public Sprite {
     public:
-        double x, y;
+//        double x, y;
 
-        double distance;
-        double angleWithOrigin;
-        double playerViewingAngle;
-        double angle;
-        double fangle;
-        bool moving;
+//        double distance;
+//        double angleWithOrigin;
+//        double playerViewingAngle;
+//        double angle;
+//        double fangle;
         bool alive;
-        bool attacking;
         int health;
+
+        bool moving;
+        bool attacking;
+
         int movingAnimation;
         int attackingAnimation;
         int dyingAnimation;
-        int xOffset;
-        int yOffset;
-        int texSize;
-        char type;
+//        int xOffset;
+//        int yOffset;
+//        int texSize;
+//        char type;
 
-        sf::Sprite sprite;
+//        sf::Sprite sprite;
+
+        Enemy();
+        void setType(char);
+        void setPosition(int, int);
 };
 
 #endif

@@ -3,23 +3,23 @@
 
 class Player {
     public:
+        double x, y;
+
         double health;
-        double xp;
+
         double attack;
+        bool attacking;
+
+        double xp;
 
         double angle;
         double angleSpeed;
-
-        double x;
-        double y;
         double movementSpeed;
 
         double height;
-        double offset;
-
-        bool attacking;
 
         Player(const char*);
+        void setPosition(int, int);
 };
 
 #endif

@@ -7,9 +7,9 @@
 
 namespace Render {
     void setup(sf::RenderWindow&);
-    void drawTitleScreen(sf::RenderWindow&);
+    void drawIntroScreen(sf::RenderWindow&);
     void drawMap(sf::RenderWindow&, Player&, Level&);
-    void drawEnemies(sf::RenderWindow&, Player&, Level&);
+    void drawSprites(sf::RenderWindow&, Player&, Level&);
     void drawWeapon(sf::RenderWindow&, Player&);
     void cleanup();
 };
