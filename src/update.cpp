@@ -223,7 +223,7 @@ void Update::checkEnemies(Player& player, Level& level) {
             level.enemies[i].attackingAnimation++;
 
             if (player.health > 0) {
-                player.health--;
+                player.health -= 0.5;
             }
         }
 
@@ -236,6 +236,6 @@ void Update::checkEnemies(Player& player, Level& level) {
 
 void Update::checkPlayer(Player& player) {
     if (player.health == 0) {
-        exit(EXIT_FAILURE);
+        Update::state = 2;
     }
 }

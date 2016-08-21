@@ -53,6 +53,9 @@ void update(sf::RenderWindow& window, Player& player, Level& level) {
             Update::moveFireball(player, level);
             Update::checkPlayer(player);
             break;
+        case 2:
+            window.close();
+            break;
     }
 }
 
