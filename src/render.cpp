@@ -423,6 +423,10 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
             level.enemies[i].angleWithOrigin += 360;
         }
         level.enemies[i].angle = level.enemies[i].playerViewingAngle - level.enemies[i].angleWithOrigin;
+
+        if (level.enemies[i].type == 'f') {
+            level.enemies[i].angle = player.angle;
+        }
     }
 
     // sort enemy list as a z-buffer
@@ -440,23 +444,79 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
     for (uint i = 0; i < level.enemies.size(); i++) {
         Enemy enemy = level.enemies[i];
 
-        double heightAndWidth = ((Constants::DISTANCE_TO_PROJECTION*enemy.sprite.getTexture()->getSize().x)/enemy.distance);
+        //if (enemy.type == 'e') {
+        if (enemy.moving) {
+            if (enemy.movingAnimation % 30 < 15) {
+                enemy.xOffset = 0;
+                enemy.yOffset = 256;
+                enemy.texSize = 64;
+            } else if (enemy.movingAnimation % 30 < 30) {
+                enemy.xOffset = 64;
+                enemy.yOffset = 256;
+                enemy.texSize = 64;
+            }
+        }
+
+        if (enemy.attacking) {
+            if (enemy.attackingAnimation % 30 < 15) {
+                enemy.xOffset = 128;
+                enemy.yOffset = 256;
+                enemy.texSize = 128;
+            } else if (enemy.attackingAnimation % 30 < 30) {
+                enemy.xOffset = 0;
+                enemy.yOffset = 320;
+                enemy.texSize = 128;
+            }
+        }
+
+        if (!enemy.alive) {
+            if (enemy.dyingAnimation % 60 < 15) {
+                enemy.xOffset = 249;
+                enemy.yOffset = 253;
+                enemy.texSize = 128;
+            } else if (enemy.dyingAnimation % 60 < 30) {
+                enemy.xOffset = 366;
+                enemy.yOffset = 257;
+                enemy.texSize = 128;
+            } else if (enemy.dyingAnimation % 60 < 45) {
+                enemy.xOffset = 291;
+                enemy.yOffset = 377;
+                enemy.texSize = 128;
+            } else if (enemy.dyingAnimation % 60 < 60) {
+                enemy.xOffset = 359;
+                enemy.yOffset = 40;
+                enemy.texSize = 128;
+            }
+        }
+      //  }
+
+        if (enemy.type == 'f') {
+            enemy.xOffset = 64;
+            enemy.yOffset = 64;
+            enemy.texSize = 32;
+        }
+
+        //double heightAndWidth = ((Constants::DISTANCE_TO_PROJECTION*enemy.sprite.getTexture()->getSize().x)/enemy.distance);
+        double heightAndWidth = ((Constants::DISTANCE_TO_PROJECTION*enemy.texSize)/enemy.distance);
 
         double projectedSliceHeight = heightAndWidth;
         double projectedSliceWidth = heightAndWidth;
 
         int startTexture = (int) ((Constants::WIDTH_2) - (projectedSliceWidth/2)-(enemy.angle*Constants::WIDTH/Constants::FOV_D));
         int endTexture = startTexture + (int) (projectedSliceWidth);
-        double divisor = (double) (endTexture - startTexture) / enemy.sprite.getTexture()->getSize().x;
+        //double divisor = (double) (endTexture - startTexture) / enemy.sprite.getTexture()->getSize().x;
+        double divisor = (double) (endTexture-startTexture) / enemy.texSize;
 
         double counter = 0;
-        //if (startTexture < 0) counter = abs(startTexture);
+//        if (startTexture < 0) counter = abs(startTexture);
 
 //        for (int i = 0; i < Constants::WIDTH; i++) {
 //            if (i >= startTexture && i <= endTexture) {
           for (int i = startTexture; i <= endTexture; i++) {
                 if (enemy.distance < level.zBuffer[i]) {
                     int sub = (int) (counter / (divisor + 0.01f));
+
+                    //std::cout << sub << std::endl;
 
                     double val = enemy.distance / fogValue;
                     if (val > 1.0) val = 1.0;
@@ -465,15 +525,16 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
                     sf::Color color(v, v, v);
                     enemy.sprite.setColor(color);
 
-                    enemy.sprite.setTextureRect(sf::IntRect(sub, 0, 1, enemy.sprite.getLocalBounds().height));
+                    enemy.sprite.setTextureRect(sf::IntRect(sub+enemy.xOffset, enemy.yOffset, 1, enemy.texSize));
                     sf::Vector2f targetSize(1.0f, projectedSliceHeight);
                     enemy.sprite.setScale(targetSize.x/enemy.sprite.getLocalBounds().width, targetSize.y/enemy.sprite.getLocalBounds().height);
+                    //enemy.sprite.setScale(targetSize.x/enemy.texSize, targetSize.y/enemy.texSize);
                     enemy.sprite.setPosition(i, (Constants::HEIGHT_2)-(projectedSliceHeight/2.0));
                     window.draw(enemy.sprite);
                 }
                 counter++;
 //            }
-        }
+          }
     }
 }
 

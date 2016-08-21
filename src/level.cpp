@@ -42,8 +42,19 @@ Level::Level(const char* fileName, Player& player) {
                 Enemy enemy;
                 enemy.x = (x * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
                 enemy.y = (y * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
+                enemy.moving = false;
+                enemy.alive = true;
+                enemy.attacking = false;
+                enemy.health = 100;
+                enemy.movingAnimation = 0;
+                enemy.attackingAnimation = 0;
+                enemy.dyingAnimation = 0;
+                enemy.xOffset = 0;
+                enemy.yOffset = 256;
+                enemy.texSize = 64;
+                enemy.type = 'e';
 
-                enemy.sprite.setTexture(Texture::enemy1);
+                enemy.sprite.setTexture(Texture::sprites);
                 enemies.push_back(enemy);
             } else {
                 map[y][x] = Constants::EMPTY;

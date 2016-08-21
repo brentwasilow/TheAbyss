@@ -6,7 +6,7 @@ TARGET := bin/TheAbyss
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-CFLAGS := -g -Wall
+CFLAGS := -g -Wall -O2
 LIB := -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -lsfml-audio
 INC := -I include
 

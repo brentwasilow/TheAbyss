@@ -8,7 +8,11 @@ namespace Texture {
     extern sf::Font titleTextFont;
     extern sf::Texture wallTexture;
     extern sf::Sprite wallTextureSprite;
+    extern sf::Texture sprites;
     extern sf::Texture enemy1;
+    extern sf::Texture enemy2;
+    extern sf::Texture enemy3;
+    extern sf::Texture enemy4;
     extern sf::Texture weapon;
     extern sf::Sprite weaponSprite;
     extern sf::Image wallTextureImage;

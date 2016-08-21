@@ -11,6 +11,17 @@ class Enemy {
         double angleWithOrigin;
         double playerViewingAngle;
         double angle;
+        bool moving;
+        bool alive;
+        bool attacking;
+        int health;
+        int movingAnimation;
+        int attackingAnimation;
+        int dyingAnimation;
+        int xOffset;
+        int yOffset;
+        int texSize;
+        char type;
 
         sf::Sprite sprite;
 };

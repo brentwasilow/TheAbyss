@@ -7,7 +7,11 @@ sf::Font Texture::titleTextFont;
 sf::Texture Texture::wallTexture;
 sf::Image Texture::wallTextureImage;
 sf::Sprite Texture::wallTextureSprite;
+sf::Texture Texture::sprites;
 sf::Texture Texture::enemy1;
+sf::Texture Texture::enemy2;
+sf::Texture Texture::enemy3;
+sf::Texture Texture::enemy4;
 sf::Texture Texture::weapon;
 sf::Sprite Texture::weaponSprite;
 
@@ -42,6 +46,22 @@ void Texture::initialize() {
 
     // load enemy1 texture
     if (!Texture::enemy1.loadFromFile("res/enemy1.png")) {
+        exit(EXIT_FAILURE);
+    }
+
+    if (!Texture::enemy2.loadFromFile("res/enemy2.png")) {
+        exit(EXIT_FAILURE);
+    }
+
+    if (!Texture::enemy3.loadFromFile("res/enemy3.png")) {
+        exit(EXIT_FAILURE);
+    }
+
+    if (!Texture::enemy4.loadFromFile("res/enemy4.png")) {
+        exit(EXIT_FAILURE);
+    }
+
+    if (!Texture::sprites.loadFromFile("res/sprites.png")) {
         exit(EXIT_FAILURE);
     }
 

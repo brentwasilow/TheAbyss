@@ -20,8 +20,10 @@ namespace Update {
     void checkWindowState(sf::RenderWindow&);
     void checkTitleToGameState();
     void checkMovement(Player&, Level&);
-    void checkWeapon(Player&);
+    void checkWeapon(Player&, Level&);
     void checkDoor(Player&, Level&);
+    void checkEnemies(Player&, Level&);
+    void moveFireball(Player&, Level&);
 }
 
 #endif
