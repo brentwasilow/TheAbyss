@@ -139,18 +139,19 @@ void Update::checkWeapon(Player& player, Level& level) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
         player.attacking = true;
         weaponOffset = 0;
-
+/*
         Enemy fireball;
         fireball.type = 'f';
         fireball.x = player.x;
         fireball.y = player.y;
-        fireball.xOffset = 64;
-        fireball.yOffset = 64;
-        fireball.texSize = 32;
+        fireball.xOffset = 0;
+        fireball.yOffset = 256;
+        fireball.texSize = 64;
         fireball.angle = player.angle;
 
         fireball.sprite.setTexture(Texture::sprites);
         level.enemies.push_back(fireball);
+  */
     }
 
     // while player is attacking lower rendering offset
@@ -165,19 +166,19 @@ void Update::checkWeapon(Player& player, Level& level) {
 }
 
 void Update::moveFireball(Player& player, Level& level) {
-    for (uint i = 0; i < level.enemies.size(); i++) {
+/*    for (uint i = 0; i < level.enemies.size(); i++) {
         if (level.enemies[i].type == 'f') {
             double angle = level.enemies[i].angle * M_PI / 180.0;
-            level.enemies[i].x += 12*cos(angle);
-            level.enemies[i].y -= 12*sin(angle);
+            level.enemies[i].x -= (12*cos(angle));
+            level.enemies[i].y += (12*sin(angle));
 
-            for (uint j = 0; j < level.enemies.size(); j++) {
-                if (int(level.enemies[j].x)/64 == int(level.enemies[i].x)/64 && int(level.enemies[j].y)/64 == int(level.enemies[i].y)/64 && level.enemies[j].type == 'e') {
-                    level.enemies[j].health -= 10;
-                }
-            }
+//            for (uint j = 0; j < level.enemies.size(); j++) {
+//                if (int(level.enemies[j].x)/64 == int(level.enemies[i].x)/64 && int(level.enemies[j].y)/64 == int(level.enemies[i].y)/64 && level.enemies[j].type == 'e') {
+//                    level.enemies[j].health -= 10;
+//                }
+//            }
         }
-    }
+    }*/
 }
 
 void Update::checkEnemies(Player& player, Level& level) {
@@ -220,11 +221,21 @@ void Update::checkEnemies(Player& player, Level& level) {
 
         if (level.enemies[i].attacking) {
             level.enemies[i].attackingAnimation++;
+
+            if (player.health > 0) {
+                player.health--;
+            }
         }
 
         // attack player
         //if (level.enemies[i].attacking && player.health > 0) {
         //   player.health--;
         //}
+    }
+}
+
+void Update::checkPlayer(Player& player) {
+    if (player.health == 0) {
+        exit(EXIT_FAILURE);
     }
 }

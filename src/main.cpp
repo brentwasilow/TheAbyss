@@ -51,6 +51,7 @@ void update(sf::RenderWindow& window, Player& player, Level& level) {
             Update::checkDoor(player, level);
             Update::checkEnemies(player, level);
             Update::moveFireball(player, level);
+            Update::checkPlayer(player);
             break;
     }
 }

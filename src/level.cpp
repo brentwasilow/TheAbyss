@@ -52,7 +52,7 @@ Level::Level(const char* fileName, Player& player) {
                 enemy.xOffset = 0;
                 enemy.yOffset = 256;
                 enemy.texSize = 64;
-                enemy.type = 'e';
+//                enemy.type = 'e';
 
                 enemy.sprite.setTexture(Texture::sprites);
                 enemies.push_back(enemy);

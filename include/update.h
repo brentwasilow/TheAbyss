@@ -24,6 +24,7 @@ namespace Update {
     void checkDoor(Player&, Level&);
     void checkEnemies(Player&, Level&);
     void moveFireball(Player&, Level&);
+    void checkPlayer(Player&);
 }
 
 #endif

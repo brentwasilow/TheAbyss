@@ -423,10 +423,6 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
             level.enemies[i].angleWithOrigin += 360;
         }
         level.enemies[i].angle = level.enemies[i].playerViewingAngle - level.enemies[i].angleWithOrigin;
-
-        if (level.enemies[i].type == 'f') {
-            level.enemies[i].angle = player.angle;
-        }
     }
 
     // sort enemy list as a z-buffer
@@ -488,13 +484,13 @@ void Render::drawEnemies(sf::RenderWindow& window, Player& player, Level& level)
                 enemy.texSize = 128;
             }
         }
-      //  }
+        //}
 
-        if (enemy.type == 'f') {
-            enemy.xOffset = 64;
-            enemy.yOffset = 64;
-            enemy.texSize = 32;
-        }
+        //if (enemy.type == 'f') {
+        //    enemy.xOffset = 64;
+        //    enemy.yOffset = 64;
+        //    enemy.texSize = 32;
+        //}
 
         //double heightAndWidth = ((Constants::DISTANCE_TO_PROJECTION*enemy.sprite.getTexture()->getSize().x)/enemy.distance);
         double heightAndWidth = ((Constants::DISTANCE_TO_PROJECTION*enemy.texSize)/enemy.distance);
