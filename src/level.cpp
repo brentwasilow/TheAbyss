@@ -44,6 +44,7 @@ Level::Level(const char* fileName, Player& player) {
                 enemy.y = (y * Constants::TILE_SIZE)+Constants::TILE_SIZE/2;
                 enemy.moving = false;
                 enemy.alive = true;
+                enemy.fangle = 0;
                 enemy.attacking = false;
                 enemy.health = 100;
                 enemy.movingAnimation = 0;

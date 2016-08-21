@@ -185,11 +185,17 @@ void Update::moveFireball(Player& player, Level& level) {
             level.enemies[i].x += 12*cos(angle*M_PI/180.0);
             level.enemies[i].y -= 12*sin(angle*M_PI/180.0);
 
-//            for (uint j = 0; j < level.enemies.size(); j++) {
-//                if (int(level.enemies[j].x)/64 == int(level.enemies[i].x)/64 && int(level.enemies[j].y)/64 == int(level.enemies[i].y)/64 && level.enemies[j].type == 'e') {
-//                    level.enemies[j].health -= 10;
-//                }
-//            }
+            int block = level.map[int(level.enemies[i].y)/Constants::TILE_SIZE][int(level.enemies[i].x)/Constants::TILE_SIZE];
+            if (block == !(Constants::EMPTY && Constants::DOOR)) {
+                level.enemies.erase(level.enemies.begin()+i);
+            }
+
+            for (uint j = 0; j < level.enemies.size(); j++) {
+                if (int(level.enemies[j].x)/64 == int(level.enemies[i].x)/64 && int(level.enemies[j].y)/64 == int(level.enemies[i].y)/64 && level.enemies[j].type == 'e') {
+                    level.enemies[j].health -= 25;
+                    level.enemies.erase(level.enemies.begin()+i);
+                }
+            }
         }
     }
 }
@@ -199,6 +205,17 @@ void Update::checkEnemies(Player& player, Level& level) {
         Enemy enemy = level.enemies[i];
         if (enemy.type == 'f') {
         } else if (enemy.type == 'e') {
+            // remove enemy from list if dead
+            if (enemy.health <= 0) {
+                enemy.alive = false;
+                enemy.moving = false;
+                enemy.attacking = false;
+                if (enemy.dyingAnimation < 59) {
+                    enemy.dyingAnimation++;
+                }
+                level.enemies[i] = enemy;
+            } else {
+
             // spotted player so start moving
             if (enemy.distance < 256 && enemy.distance > 96) {
                 enemy.moving = true;
@@ -223,14 +240,6 @@ void Update::checkEnemies(Player& player, Level& level) {
                 enemy.moving = false;
             }
 
-            // remove enemy from list if dead
-            if (enemy.health == 0) {
-                enemy.alive = false;
-                if (enemy.dyingAnimation < 59) {
-                    enemy.dyingAnimation++;
-                }
-            }
-
             if (enemy.moving) {
                 enemy.movingAnimation++;
             }
@@ -243,6 +252,7 @@ void Update::checkEnemies(Player& player, Level& level) {
                 //}
             }
             level.enemies[i] = enemy;
+        }
         }
     }
 }
