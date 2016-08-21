@@ -29,6 +29,7 @@ int main(int argc, char* argv[]) {
 
         while (clock.getElapsedTime().asMilliseconds() > nextGameTick && loops < Constants::MAX_FRAMESKIP) {
             update(window, player, level);
+        //    render(window, player, level);
             nextGameTick += Constants::SKIP_TICKS;
             loops++;
         }
@@ -49,9 +50,9 @@ void update(sf::RenderWindow& window, Player& player, Level& level) {
             Update::checkMovement(player, level);
             Update::checkWeapon(player, level);
             Update::checkDoor(player, level);
+            Update::checkPlayer(player);
             Update::checkEnemies(player, level);
             Update::moveFireball(player, level);
-            Update::checkPlayer(player);
             break;
         case 2:
             window.close();

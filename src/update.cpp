@@ -136,22 +136,31 @@ void Update::checkMovement(Player& player, Level& level) {
 
 void Update::checkWeapon(Player& player, Level& level) {
     // if attack key pressed initialize variables
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && !player.attacking) {
         player.attacking = true;
         weaponOffset = 0;
-/*
-        Enemy fireball;
-        fireball.type = 'f';
-        fireball.x = player.x;
-        fireball.y = player.y;
-        fireball.xOffset = 0;
-        fireball.yOffset = 256;
-        fireball.texSize = 64;
-        fireball.angle = player.angle;
 
-        fireball.sprite.setTexture(Texture::sprites);
-        level.enemies.push_back(fireball);
-  */
+        Enemy enemy;
+        enemy.x = int(player.x);
+        enemy.y = int(player.y);
+        enemy.distance = 32;
+        enemy.angleWithOrigin = player.angle;
+        enemy.playerViewingAngle = player.angle;
+        enemy.angle = player.angle;
+        enemy.fangle = player.angle;
+        enemy.moving = false;
+        enemy.alive = true;
+        enemy.attacking = false;
+        enemy.health = 100;
+        enemy.movingAnimation = 0;
+        enemy.attackingAnimation = 0;
+        enemy.dyingAnimation = 0;
+        enemy.xOffset = 256;
+        enemy.yOffset = 0;
+        enemy.texSize = 64;
+        enemy.type = 'f';
+        enemy.sprite.setTexture(Texture::sprites);
+        level.enemies.push_back(enemy);
     }
 
     // while player is attacking lower rendering offset
@@ -166,11 +175,15 @@ void Update::checkWeapon(Player& player, Level& level) {
 }
 
 void Update::moveFireball(Player& player, Level& level) {
-/*    for (uint i = 0; i < level.enemies.size(); i++) {
-        if (level.enemies[i].type == 'f') {
-            double angle = level.enemies[i].angle * M_PI / 180.0;
-            level.enemies[i].x -= (12*cos(angle));
-            level.enemies[i].y += (12*sin(angle));
+    for (uint i = 0; i < level.enemies.size(); i++) {
+        Enemy enemy = level.enemies[i];
+        if (enemy.type == 'f') {
+            double angle = level.enemies[i].fangle;
+            //std::cout << level.enemies[i].angle << std::endl;
+            //if (angle >= 360.0) angle -= 360.0;
+            //if (angle < 0.0) angle += 360.0;
+            level.enemies[i].x += 12*cos(angle*M_PI/180.0);
+            level.enemies[i].y -= 12*sin(angle*M_PI/180.0);
 
 //            for (uint j = 0; j < level.enemies.size(); j++) {
 //                if (int(level.enemies[j].x)/64 == int(level.enemies[i].x)/64 && int(level.enemies[j].y)/64 == int(level.enemies[i].y)/64 && level.enemies[j].type == 'e') {
@@ -178,59 +191,59 @@ void Update::moveFireball(Player& player, Level& level) {
 //                }
 //            }
         }
-    }*/
+    }
 }
 
 void Update::checkEnemies(Player& player, Level& level) {
     for (uint i = 0; i < level.enemies.size(); i++) {
-        // spotted player so start moving
-        if (level.enemies[i].distance < 256 && level.enemies[i].distance > 96) {
-            level.enemies[i].moving = true;
-            level.enemies[i].attacking = false;
-     }
-
-        // move toward player to close distance
-        if (level.enemies[i].moving) {
-            double x = level.enemies[i].x - player.x;
-            double y = player.y - level.enemies[i].y;
-
-            x = x/level.enemies[i].distance;
-            y = y/level.enemies[i].distance;
-
-            level.enemies[i].x -= 2*x;
-            level.enemies[i].y += 2*y;
-        }
-
-        // close enough so start attacking
-        if (level.enemies[i].distance <= 96) {
-            level.enemies[i].attacking = true;
-            level.enemies[i].moving = false;
-        }
-
-        // remove enemy from list if dead
-        if (level.enemies[i].health == 0) {
-            level.enemies[i].alive = false;
-            if (level.enemies[i].dyingAnimation < 59) {
-                level.enemies[i].dyingAnimation++;
+        Enemy enemy = level.enemies[i];
+        if (enemy.type == 'f') {
+        } else if (enemy.type == 'e') {
+            // spotted player so start moving
+            if (enemy.distance < 256 && enemy.distance > 96) {
+                enemy.moving = true;
+                enemy.attacking = false;
             }
-        }
 
-        if (level.enemies[i].moving) {
-            level.enemies[i].movingAnimation++;
-        }
+            // move toward player to close distance
+            if (enemy.moving) {
+                double x = enemy.x - player.x;
+                double y = player.y - enemy.y;
 
-        if (level.enemies[i].attacking) {
-            level.enemies[i].attackingAnimation++;
+                x = x/enemy.distance;
+                y = y/enemy.distance;
 
-            if (player.health > 0) {
-                player.health -= 0.5;
+                enemy.x -= 2*x;
+                enemy.y += 2*y;
             }
-        }
 
-        // attack player
-        //if (level.enemies[i].attacking && player.health > 0) {
-        //   player.health--;
-        //}
+            // close enough so start attacking
+            if (enemy.distance <= 96) {
+                enemy.attacking = true;
+                enemy.moving = false;
+            }
+
+            // remove enemy from list if dead
+            if (enemy.health == 0) {
+                enemy.alive = false;
+                if (enemy.dyingAnimation < 59) {
+                    enemy.dyingAnimation++;
+                }
+            }
+
+            if (enemy.moving) {
+                enemy.movingAnimation++;
+            }
+
+            if (enemy.attacking) {
+                enemy.attackingAnimation++;
+
+                //if (player.health > 0) {
+                //    player.health -= 0.5;
+                //}
+            }
+            level.enemies[i] = enemy;
+        }
     }
 }
 

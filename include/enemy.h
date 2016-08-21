@@ -11,6 +11,7 @@ class Enemy {
         double angleWithOrigin;
         double playerViewingAngle;
         double angle;
+        double fangle;
         bool moving;
         bool alive;
         bool attacking;
