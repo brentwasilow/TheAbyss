@@ -168,6 +168,10 @@ void Update::checkWeapon(Player& player, Level& level) {
         weaponOffset += 2;
     }
 
+    if (weaponOffset % 128 > 32) {
+        player.attacking = false;
+    }
+
     // if rendering offset is 0 stop animation
     if (weaponOffset == int(Texture::weapon.getSize().y)) {
         player.attacking = false;
@@ -192,8 +196,11 @@ void Update::moveFireball(Player& player, Level& level) {
 
             for (uint j = 0; j < level.enemies.size(); j++) {
                 if (int(level.enemies[j].x)/64 == int(level.enemies[i].x)/64 && int(level.enemies[j].y)/64 == int(level.enemies[i].y)/64 && level.enemies[j].type == 'e') {
-                    level.enemies[j].health -= 25;
-                    level.enemies.erase(level.enemies.begin()+i);
+                    if (!level.enemies[j].alive) {
+                    } else {
+                        level.enemies[j].health -= 25;
+                        level.enemies.erase(level.enemies.begin()+i);
+                    }
                 }
             }
         }
