@@ -5,13 +5,6 @@
 
 class Enemy: public Sprite {
     public:
-//        double x, y;
-
-//        double distance;
-//        double angleWithOrigin;
-//        double playerViewingAngle;
-//        double angle;
-//        double fangle;
         bool alive;
         int health;
 
@@ -21,12 +14,6 @@ class Enemy: public Sprite {
         int movingAnimation;
         int attackingAnimation;
         int dyingAnimation;
-//        int xOffset;
-//        int yOffset;
-//        int texSize;
-//        char type;
-
-//        sf::Sprite sprite;
 
         Enemy();
         void setType(char);

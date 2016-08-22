@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
     sf::RenderWindow window;
     Render::setup(window);
     Texture::initialize();
-    Player player("res/level1.plyr");
+    Player player;
     Level level("res/level1.png", player);
 
     // define clock and ancillaries for game loop

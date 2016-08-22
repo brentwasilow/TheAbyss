@@ -18,7 +18,7 @@ class Player {
 
         double height;
 
-        Player(const char*);
+        Player();
         void setPosition(int, int);
 };
 

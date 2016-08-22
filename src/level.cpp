@@ -47,13 +47,6 @@ Level::Level(const char* fileName, Player& player) {
                 wizard->setPosition(x, y);
 
                 sprites.push_back(wizard);
-
-                // set wizard position in the center of the tile
-                //wizard.x = (x * Constants::TILE_SIZE) + (Constants::TILE_SIZE/2);
-                //wizard.y = (y * Constants::TILE_SIZE) + (Constants::TILE_SIZE/2);
-
-                // need to remove
-                //wizard.fangle = 0;
             }
         }
     }
