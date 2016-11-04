@@ -69,7 +69,13 @@ void Update::checkDoor(Player& player, Level& level) {
     // wait sequence
     if (waitingDoor) {
         openDoorTimer++;
-        if (openDoorTimer == Constants::DOOR_OPEN_TIME) {
+        int row = int(player.y)/Constants::TILE_SIZE;
+        int col = int(player.x)/Constants::TILE_SIZE;
+        if (level.map[row][col] == Wall::DOOR) {
+            return;
+        }
+
+        if (openDoorTimer >= Constants::DOOR_OPEN_TIME) {
             waitingDoor = false;
             openDoorTimer = 0.0;
             closeDoor = true;

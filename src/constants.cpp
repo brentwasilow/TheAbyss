@@ -10,7 +10,7 @@ namespace Constants {
     const int HEIGHT_2 = (HEIGHT/2);
 
     const char* TITLE = "The Abyss";
-    const int ANTI_ALIASING_LEVEL = 8;
+    const int ANTI_ALIASING_LEVEL = 0;
 
     const double FOV_D = 60.0;
     const double FOV_R = FOV_D * (M_PI/180.0);

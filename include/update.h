@@ -7,9 +7,12 @@
 
 namespace Update {
     extern int state;
+
     extern int weaponOffset;
+
     extern double timer;
     extern double openDoorTimer;
+
     extern bool openingDoor;
     extern bool waitingDoor;
     extern bool closeDoor;

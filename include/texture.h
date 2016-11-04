@@ -15,6 +15,8 @@ namespace Texture {
     extern sf::Texture enemy4;
     extern sf::Texture weapon;
     extern sf::Sprite weaponSprite;
+
+    extern sf::Image spritesImage;
     extern sf::Image wallTextureImage;
 
     void initialize();
