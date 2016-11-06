@@ -5,5 +5,9 @@ lib/*
 # Ignore any executables
 bin/*
 
+# Ignore any swap files
+src/*.swp
+include/*.swp
+
 # Ignore specific files
 .DS_Store

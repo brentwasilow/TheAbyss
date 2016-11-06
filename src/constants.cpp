@@ -3,7 +3,8 @@
 
 #define _USE_MATH_DEFINES
 
-namespace Constants {
+namespace Constants
+{
     const int WIDTH = 640;
     const int WIDTH_2 = (WIDTH/2);
     const int HEIGHT = 480;

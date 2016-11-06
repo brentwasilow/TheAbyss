@@ -177,7 +177,7 @@ void Update::moveSprite(Player& player, Level& level) {
 
             int block = level.map[int(sprite->y)/Constants::TILE_SIZE][int(sprite->x)/Constants::TILE_SIZE];
             if (block == !(Wall::EMPTY && Wall::DOOR)) {
-                delete sprite;
+                //delete sprite;
                 level.sprites.erase(level.sprites.begin()+i);
             }
 
@@ -188,7 +188,7 @@ void Update::moveSprite(Player& player, Level& level) {
                         if (!enemy->alive) {
                         } else {
                             enemy->health -= 25;
-                            delete sprite;
+                            //delete sprite;
                             level.sprites.erase(level.sprites.begin()+i);
                         }
                     }
