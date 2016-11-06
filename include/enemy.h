@@ -11,6 +11,7 @@ class Enemy: public Sprite {
         bool moving;
         bool attacking;
 
+
         int movingAnimation;
         int attackingAnimation;
         int dyingAnimation;

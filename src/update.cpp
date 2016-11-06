@@ -217,6 +217,7 @@ void Update::checkEnemies(Player& player, Level& level) {
                 if (sprite->distance < 256 && sprite->distance > 96) {
                     sprite->moving = true;
                     sprite->attacking = false;
+                    sprite->attackingAnimation = 1;
                 }
 
                 // move toward player to close distance
@@ -233,6 +234,9 @@ void Update::checkEnemies(Player& player, Level& level) {
 
                 // close enough so start attacking
                 if (sprite->distance <= 96) {
+                    if (sprite->attacking == false) {
+                        player.health -= 10;
+                    }
                     sprite->attacking = true;
                     sprite->moving = false;
                 }
@@ -243,6 +247,7 @@ void Update::checkEnemies(Player& player, Level& level) {
 
                 if (sprite->attacking) {
                     sprite->attackingAnimation++;
+                    if (sprite->attackingAnimation % 120 == 0) player.health -= 10;
                 }
             }
         }
